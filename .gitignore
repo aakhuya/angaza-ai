@@ -1,0 +1,32 @@
+# Node
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+pnpm-lock.yaml.bak
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# DB (dev)
+*.db
+*.sqlite3
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
