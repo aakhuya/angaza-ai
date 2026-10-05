@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 from pydantic import TypeAdapter, ValidationError
@@ -11,7 +11,7 @@ adapter = TypeAdapter(Event)
 def test_pass_event_roundtrip():
     ev = PassEvent(
         event_id="e1", match_id="m1",
-        timestamp=datetime(2025, 1, 1, tzinfo=timezone.utc),
+        timestamp=datetime(2025, 1, 1, tzinfo=UTC),
         minute=10, second=30, team_id="HOME", player_id="HOME-p06",
         x=0.3, y=0.4,
         event_type="pass", distance_m=22.5, completed=True,

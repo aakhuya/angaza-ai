@@ -15,7 +15,6 @@ from app.schemas.events import (
     PossessionChangeEvent,
     ShotEvent,
     SprintEvent,
-    SubstitutionEvent,
 )
 
 FINAL_THIRD_X = 0.66
@@ -76,7 +75,10 @@ def compute_state(
                 if ev.end_x >= FINAL_THIRD_X and ev.x < FINAL_THIRD_X:
                     team_stats.final_third_entries += 1
             _player(players, ev.player_id, ev.team_id).passes_completed += int(ev.completed)
-            if ev.completed and (ev.distance_m >= PROGRESSIVE_PASS_MIN_M or ev.end_x >= FINAL_THIRD_X):
+            is_progressive = (
+                ev.distance_m >= PROGRESSIVE_PASS_MIN_M or ev.end_x >= FINAL_THIRD_X
+            )
+            if ev.completed and is_progressive:
                 _player(players, ev.player_id, ev.team_id).progressive_passes += 1
 
         elif isinstance(ev, ShotEvent):
@@ -242,5 +244,11 @@ def _compute_momentum(buckets: dict[int, dict[str, float]]) -> list[MomentumPoin
     points: list[MomentumPoint] = []
     for b in range(0, max_minute // 5 + 1):
         row = buckets.get(b, {"home": 0.0, "away": 0.0})
-        points.append(MomentumPoint(minute=b * 5, home=round(row["home"], 2), away=round(row["away"], 2)))
+        points.append(
+            MomentumPoint(
+                minute=b * 5,
+                home=round(row["home"], 2),
+                away=round(row["away"], 2),
+            )
+        )
     return points

@@ -1,10 +1,13 @@
-.PHONY: api-install api-dev api-test web-install web-dev web-test dev
+.PHONY: api-install api-dev api-test api-lint web-install web-dev web-test dev
 
 api-install:
-	cd apps/api && python3.11 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
+	cd apps/api && python -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
 
 api-dev:
 	cd apps/api && . .venv/bin/activate && uvicorn app.main:app --reload --port 8000
+
+api-lint:
+	cd apps/api && . .venv/bin/activate && ruff check --no-cache .
 
 api-test:
 	cd apps/api && . .venv/bin/activate && pytest -q

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from app.analytics.compute import compute_state, score_importance
 from app.schemas.events import (
@@ -8,7 +8,7 @@ from app.schemas.events import (
     ShotEvent,
 )
 
-T0 = datetime(2025, 1, 1, 15, 0, 0, tzinfo=timezone.utc)
+T0 = datetime(2025, 1, 1, 15, 0, 0, tzinfo=UTC)
 
 
 def _pass(seq, sec, team, player, dist, completed, end_x=0.5, x=0.4, etype="pass"):

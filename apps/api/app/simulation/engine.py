@@ -1,5 +1,5 @@
 import random
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from app.schemas.events import (
     DefensiveEvent,
@@ -14,7 +14,7 @@ from app.simulation.roster import RosterTeam, default_teams
 from app.simulation.scenarios import Scenario, get_scenario
 
 MATCH_DURATION_MIN = 90
-MATCH_START = datetime(2025, 1, 1, 15, 0, 0, tzinfo=timezone.utc)
+MATCH_START = datetime(2025, 1, 1, 15, 0, 0, tzinfo=UTC)
 
 
 class SimulationEngine:

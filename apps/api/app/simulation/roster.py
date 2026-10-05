@@ -30,7 +30,13 @@ class RosterTeam:
     players: tuple[RosterPlayer, ...]
 
 
-def build_team(team_id: str, name: str, short_name: str, color: str, name_offset: int) -> RosterTeam:
+def build_team(
+    team_id: str,
+    name: str,
+    short_name: str,
+    color: str,
+    name_offset: int,
+) -> RosterTeam:
     players: list[RosterPlayer] = []
     for i, pos in enumerate(POSITIONS):
         fn = FIRST_NAMES[(name_offset + i) % len(FIRST_NAMES)]

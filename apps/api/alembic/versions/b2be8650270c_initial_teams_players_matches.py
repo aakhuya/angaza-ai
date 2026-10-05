@@ -5,17 +5,17 @@ Revises:
 Create Date: 2026-10-06 01:29:46.120006
 
 """
-from typing import Sequence, Union
+from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = 'b2be8650270c'
-down_revision: Union[str, None] = None
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = None
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
@@ -25,7 +25,12 @@ def upgrade() -> None:
     sa.Column('name', sa.String(length=80), nullable=False),
     sa.Column('short_name', sa.String(length=8), nullable=False),
     sa.Column('color', sa.String(length=9), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column(
+        'created_at',
+        sa.DateTime(timezone=True),
+        server_default=sa.text('(CURRENT_TIMESTAMP)'),
+        nullable=False,
+    ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
@@ -38,7 +43,12 @@ def upgrade() -> None:
     sa.Column('status', sa.String(length=16), nullable=False),
     sa.Column('started_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('ended_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column(
+        'created_at',
+        sa.DateTime(timezone=True),
+        server_default=sa.text('(CURRENT_TIMESTAMP)'),
+        nullable=False,
+    ),
     sa.ForeignKeyConstraint(['away_team_id'], ['teams.id'], ),
     sa.ForeignKeyConstraint(['home_team_id'], ['teams.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -49,7 +59,12 @@ def upgrade() -> None:
     sa.Column('name', sa.String(length=80), nullable=False),
     sa.Column('position', sa.String(length=4), nullable=False),
     sa.Column('number', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column(
+        'created_at',
+        sa.DateTime(timezone=True),
+        server_default=sa.text('(CURRENT_TIMESTAMP)'),
+        nullable=False,
+    ),
     sa.ForeignKeyConstraint(['team_id'], ['teams.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('team_id', 'number', name='uq_player_team_number')

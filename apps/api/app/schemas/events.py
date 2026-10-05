@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Literal, Union
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
@@ -58,15 +58,14 @@ class MilestoneEvent(_BaseEvent):
     label: str
 
 
-Event = Annotated[
-    Union[
-        PassEvent,
-        ShotEvent,
-        DefensiveEvent,
-        PossessionChangeEvent,
-        SubstitutionEvent,
-        SprintEvent,
-        MilestoneEvent,
-    ],
-    Field(discriminator="event_type"),
-]
+EventUnion = (
+    PassEvent
+    | ShotEvent
+    | DefensiveEvent
+    | PossessionChangeEvent
+    | SubstitutionEvent
+    | SprintEvent
+    | MilestoneEvent
+)
+
+Event = Annotated[EventUnion, Field(discriminator="event_type")]
