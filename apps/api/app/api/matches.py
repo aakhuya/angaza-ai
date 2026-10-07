@@ -11,7 +11,6 @@ from app.services.match_runner import match_runners
 from app.simulation.engine import SimulationEngine
 from app.simulation.scenarios import SCENARIOS
 
-
 router = APIRouter(prefix="/matches", tags=["matches"])
 
 

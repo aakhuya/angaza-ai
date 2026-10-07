@@ -19,7 +19,7 @@ async def _collect_until_finished(match_id: str, timeout: float = 15.0):
             collected.append(envelope)
             if envelope.type == "status" and envelope.status == "finished":
                 break
-    except asyncio.TimeoutError:
+    except TimeoutError:
         pass
     finally:
         await agen.aclose()

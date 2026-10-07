@@ -76,12 +76,9 @@ def _harvest(value, out: set[float]) -> None:
             _harvest(v, out)
     elif isinstance(value, bool):
         return
-    elif isinstance(value, (int, float)):
+    elif isinstance(value, int | float):
         out.add(float(value))
 
 
 def _number_matches(value: float, known: set[float], tolerance: float = 0.15) -> bool:
-    for k in known:
-        if abs(k - value) <= tolerance:
-            return True
-    return False
+    return any(abs(k - value) <= tolerance for k in known)

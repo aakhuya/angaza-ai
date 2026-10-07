@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.agents.facts import build_fact_bundle
 from app.agents.orchestrator import run
@@ -8,7 +8,7 @@ from app.analytics.compute import compute_state, score_importance
 from app.schemas.events import PassEvent
 from app.services.agent_store import agent_store
 
-T0 = datetime(2025, 1, 1, tzinfo=timezone.utc)
+T0 = datetime(2025, 1, 1, tzinfo=UTC)
 
 
 def _bundle():

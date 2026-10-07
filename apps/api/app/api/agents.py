@@ -2,7 +2,6 @@ from fastapi import APIRouter, Query
 
 from app.services.agent_store import agent_store
 
-
 router = APIRouter(prefix="/agents", tags=["agents"])
 
 

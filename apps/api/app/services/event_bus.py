@@ -1,6 +1,6 @@
 import asyncio
 from collections import defaultdict
-from typing import AsyncIterator
+from collections.abc import AsyncIterator
 
 from app.schemas.stream import Envelope
 

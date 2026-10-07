@@ -1,4 +1,4 @@
-from typing import Annotated, Literal, Union
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
@@ -43,6 +43,6 @@ class StatusEnvelope(BaseModel):
 
 
 Envelope = Annotated[
-    Union[EventEnvelope, StateEnvelope, InsightEnvelope, ImportanceEnvelope, StatusEnvelope],
+    EventEnvelope | StateEnvelope | InsightEnvelope | ImportanceEnvelope | StatusEnvelope,
     Field(discriminator="type"),
 ]

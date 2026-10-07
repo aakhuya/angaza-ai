@@ -1,6 +1,6 @@
 import asyncio
 import inspect
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.ai.mock import MockProvider
 from app.ai.registry import set_provider_override
@@ -8,7 +8,7 @@ from app.analytics.compute import compute_state, score_importance
 from app.schemas.events import PassEvent
 from app.services.insight_generator import generate
 
-T0 = datetime(2025, 1, 1, tzinfo=timezone.utc)
+T0 = datetime(2025, 1, 1, tzinfo=UTC)
 
 
 def _fixture():

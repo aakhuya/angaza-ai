@@ -4,7 +4,6 @@ import json
 from app.ai.mock import MockProvider
 from app.ai.provider import ChatMessage, ChatRequest
 
-
 SCHEMA = {
     "type": "object",
     "properties": {

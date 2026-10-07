@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from threading import Lock
 from typing import Any
 
@@ -32,7 +32,7 @@ class AgentExecutionStore:
 
     def add(self, execution: AgentExecution) -> None:
         row = execution if execution.created_at else AgentExecution(
-            **{**execution.__dict__, "created_at": datetime.now(timezone.utc).isoformat()}
+            **{**execution.__dict__, "created_at": datetime.now(UTC).isoformat()}
         )
         with self._lock:
             bucket = self._by_match[row.match_id]

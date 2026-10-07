@@ -2,7 +2,6 @@ import asyncio
 from dataclasses import dataclass
 
 from app.analytics.compute import compute_state, score_importance
-from app.core.config import get_settings
 from app.core.logging import get_logger
 from app.schemas.stream import (
     EventEnvelope,
@@ -64,7 +63,7 @@ class MatchRunnerRegistry:
         handle.stop.set()
         try:
             await asyncio.wait_for(handle.task, timeout=5.0)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             handle.task.cancel()
         return True
 
@@ -80,7 +79,6 @@ async def _run_match(
     speed_multiplier: float | None,
     stop: asyncio.Event,
 ) -> None:
-    settings = get_settings()
     mult = speed_multiplier if speed_multiplier is not None else 60.0
     # 1 wall-clock second = `mult` match seconds.
     tick_seconds = 1.0 / max(mult, 0.001)
