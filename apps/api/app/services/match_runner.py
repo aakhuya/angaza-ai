@@ -121,11 +121,12 @@ async def _run_match(
             importance = score_importance(ev, state)
             if importance.score >= IMPORTANCE_THRESHOLD:
                 await event_bus.publish(match_id, ImportanceEnvelope(importance=importance))
-                insight: InsightEnvelope = generate_insight_stub(
+                insight: InsightEnvelope | None = await generate_insight_stub(
                     ev, state, importance, viewer_mode=viewer_mode
                 )
-                insight_store.add(insight)
-                await event_bus.publish(match_id, insight)
+                if insight is not None:
+                    insight_store.add(insight)
+                    await event_bus.publish(match_id, insight)
 
         # Final state snapshot after the last event.
         final_state = compute_state(match_id, running_events)
