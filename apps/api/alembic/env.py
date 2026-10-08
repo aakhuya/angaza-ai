@@ -4,7 +4,7 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-from app.models import entities  # noqa: F401  (register tables)
+from app.models import entities, user  # noqa: F401  (register tables)
 from app.models.base import Base
 
 config = context.config
