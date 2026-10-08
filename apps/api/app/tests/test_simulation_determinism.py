@@ -19,9 +19,16 @@ def test_different_seed_differs():
 
 
 def test_scenarios_produce_distinct_streams():
+    scenario_names = [
+        "balanced",
+        "high_press",
+        "dominant_possession",
+        "counter_attack",
+        "late_comeback",
+    ]
     streams = {
         name: _serialize(SimulationEngine("m1", seed=7, scenario=name).generate())
-        for name in ["balanced", "high_press", "dominant_possession", "counter_attack", "late_comeback"]
+        for name in scenario_names
     }
     for a_name, a in streams.items():
         for b_name, b in streams.items():

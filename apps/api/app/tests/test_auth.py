@@ -1,4 +1,3 @@
-import os
 import tempfile
 from pathlib import Path
 
@@ -20,12 +19,18 @@ def client(monkeypatch):
     get_settings.cache_clear()
 
     from app.models import session as session_mod
-    engine = create_engine(f"sqlite:///{tmp}", connect_args={"check_same_thread": False}, future=True)
+    engine = create_engine(
+        f"sqlite:///{tmp}",
+        connect_args={"check_same_thread": False},
+        future=True,
+    )
     session_mod.engine = engine
-    session_mod.SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
+    session_mod.SessionLocal = sessionmaker(
+        bind=engine, autoflush=False, autocommit=False, expire_on_commit=False
+    )
 
-    from app.models.base import Base
     from app.models import entities, user  # noqa: F401
+    from app.models.base import Base
     Base.metadata.create_all(engine)
 
     # FastAPI `get_db` was imported at module load; rebind to the test factory.

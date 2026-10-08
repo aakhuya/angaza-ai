@@ -7,22 +7,28 @@ on:
 jobs:
   api:
     runs-on: ubuntu-latest
-    defaults: { run: { working-directory: apps/api } }
+    defaults:
+      run:
+        working-directory: apps/api
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
+        with:
+          python-version: "3.11"
       - run: pip install -r requirements.txt
-      - run: ruff check --no-cache .
+      - run: ruff check . --config pyproject.toml
       - run: pytest -q
 
   web:
     runs-on: ubuntu-latest
-    defaults: { run: { working-directory: apps/web } }
+    defaults:
+      run:
+        working-directory: apps/web
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: "22" }
+        with:
+          node-version: "20"
       - run: corepack enable
       - run: pnpm install --frozen-lockfile=false
       - run: pnpm test

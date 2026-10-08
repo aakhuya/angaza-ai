@@ -34,7 +34,11 @@ class _Healthy:
 def _req() -> ChatRequest:
     return ChatRequest(
         messages=[ChatMessage(role="user", content="hi")],
-        response_schema={"type": "object", "properties": {"ok": {"type": "boolean"}}, "required": ["ok"]},
+        response_schema={
+            "type": "object",
+            "properties": {"ok": {"type": "boolean"}},
+            "required": ["ok"],
+        },
     )
 
 

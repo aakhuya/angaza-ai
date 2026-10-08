@@ -6,13 +6,13 @@ from sqlalchemy.orm import Session
 from sse_starlette.sse import EventSourceResponse
 
 from app.analytics.compute import compute_state
-from app.schemas.stream import Envelope, StatusEnvelope
-from app.services.event_bus import event_bus
-from app.services.insight_store import insight_store
 from app.api.deps import ACCESS_COOKIE
 from app.core.security import decode_access_token
 from app.models.session import get_db
 from app.models.user import Preferences, User
+from app.schemas.stream import Envelope, StatusEnvelope
+from app.services.event_bus import event_bus
+from app.services.insight_store import insight_store
 from app.services.match_runner import match_runners
 from app.simulation.engine import SimulationEngine
 from app.simulation.scenarios import SCENARIOS
@@ -60,10 +60,8 @@ def _user_viewer_mode(request: Request, db: Session) -> str | None:
     if not user_id:
         return None
     prefs = db.scalar(select(Preferences).where(Preferences.user_id == user_id))
-    if prefs is None:
-        # Ensure a default row exists for authenticated users going forward.
-        if db.get(User, user_id) is None:
-            return None
+    if prefs is None and db.get(User, user_id) is None:
+        return None
     return prefs.viewer_mode if prefs else None
 
 

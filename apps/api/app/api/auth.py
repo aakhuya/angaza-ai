@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy import select
@@ -18,10 +18,10 @@ from app.models.session import get_db
 from app.models.user import Preferences, Profile, RefreshToken, User
 from app.schemas.auth import (
     LoginRequest,
-    ProfilePatch,
-    ProfileResponse,
     PreferencesPatch,
     PreferencesResponse,
+    ProfilePatch,
+    ProfileResponse,
     SignupRequest,
     UserResponse,
 )
@@ -54,7 +54,7 @@ def _issue_refresh(db: Session, user: User) -> str:
         RefreshToken(
             user_id=user.id,
             token_hash=hashed,
-            expires_at=datetime.now(timezone.utc)
+            expires_at=datetime.now(UTC)
             + timedelta(days=settings.jwt_refresh_ttl_days),
         )
     )
@@ -70,8 +70,16 @@ def _user_response(user: User) -> UserResponse:
     )
 
 
-@router.post("/auth/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def signup(payload: SignupRequest, response: Response, db: Session = Depends(get_db)) -> UserResponse:
+@router.post(
+    "/auth/signup",
+    response_model=UserResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def signup(
+    payload: SignupRequest,
+    response: Response,
+    db: Session = Depends(get_db),
+) -> UserResponse:
     existing = db.scalar(select(User).where(User.email == payload.email))
     if existing is not None:
         raise HTTPException(status_code=409, detail="Email already registered")
@@ -117,7 +125,7 @@ def logout(
         hashed = hash_refresh_token(raw)
         token = db.scalar(select(RefreshToken).where(RefreshToken.token_hash == hashed))
         if token is not None and token.user_id == user.id:
-            token.revoked_at = datetime.now(timezone.utc)
+            token.revoked_at = datetime.now(UTC)
             db.commit()
     _clear_auth_cookies(response)
 
@@ -134,10 +142,10 @@ def refresh(
 
     hashed = hash_refresh_token(raw)
     token = db.scalar(select(RefreshToken).where(RefreshToken.token_hash == hashed))
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     if token is None or token.revoked_at is not None:
         raise HTTPException(status_code=401, detail="Invalid session")
-    if token.expires_at.replace(tzinfo=timezone.utc) < now:
+    if token.expires_at.replace(tzinfo=UTC) < now:
         raise HTTPException(status_code=401, detail="Session expired")
 
     user = db.get(User, token.user_id)
