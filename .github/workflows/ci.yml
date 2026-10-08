@@ -30,28 +30,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22.11.0"
-          cache: pnpm
-          cache-dependency-path: apps/web/pnpm-lock.yaml
-      - run: pnpm install --frozen-lockfile=false
+      - run: pnpm install --no-frozen-lockfile
       - run: pnpm test
       - run: pnpm build
-
-  versions:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9.12.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22.11.0"
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - run: |
-          node -v
-          npm -v
-          pnpm -v
-          python -V
-          pip -V
