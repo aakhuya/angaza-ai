@@ -9,7 +9,8 @@ import type { MatchState, Preferences, Profile } from "@/types/api";
 
 async function fetchRecentState(): Promise<MatchState | null> {
   try {
-    return await api.get<MatchState>("/matches/demo-dashboard/statistics?seed=42&scenario=balanced");
+    const res = await api.get<{ scenario: string; seed: number; state: MatchState }>("/scenarios/balanced/snapshot?seed=42");
+    return res.state;
   } catch {
     return null;
   }

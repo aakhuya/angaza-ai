@@ -7,6 +7,7 @@ from app.api.agents import router as agents_router
 from app.api.auth import router as auth_router
 from app.api.health import router as health_router
 from app.api.matches import router as matches_router
+from app.api.scenarios import router as scenarios_router
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger
 
@@ -36,6 +37,7 @@ def create_app() -> FastAPI:
     app.include_router(matches_router)
     app.include_router(agents_router)
     app.include_router(auth_router)
+    app.include_router(scenarios_router)
 
     return app
 
