@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 
 from app.analytics.compute import compute_state
-from app.schemas.stream import InsightEnvelope
 from app.services.insight_store import insight_store
 from app.services.recap import build_recap
 from app.simulation.engine import SimulationEngine

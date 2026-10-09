@@ -52,7 +52,9 @@ def _story(state: MatchState, winner: str) -> str:
     if winner == "draw":
         lead = f"The match finished level at {state.home_score}-{state.away_score}."
     else:
-        lead = f"{winner} finished {max(state.home_score, state.away_score)}-{min(state.home_score, state.away_score)}."
+        hi = max(state.home_score, state.away_score)
+        lo = min(state.home_score, state.away_score)
+        lead = f"{winner} finished {hi}-{lo}."
     possession_lead = (
         f"{home.team_id} controlled {home.possession_pct:.0f}% of possession."
         if home.possession_pct >= away.possession_pct
@@ -64,7 +66,11 @@ def _story(state: MatchState, winner: str) -> str:
 
 def _tactical_story(state: MatchState) -> str:
     home, away = state.home, state.away
-    progressor = home.team_id if home.progressive_passes >= away.progressive_passes else away.team_id
+    progressor = (
+        home.team_id
+        if home.progressive_passes >= away.progressive_passes
+        else away.team_id
+    )
     pressor = home.team_id if home.pressures >= away.pressures else away.team_id
     return (
         f"{progressor} progressed the ball more often through the lines. "

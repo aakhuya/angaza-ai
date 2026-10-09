@@ -2,7 +2,6 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 
-
 client = TestClient(app)
 
 
@@ -29,7 +28,10 @@ def test_player_lookup_by_id_and_name():
     by_id = client.get(f"/scenarios/high_press/players/{any_player['id']}").json()
     assert by_id["player"]["id"] == any_player["id"]
 
-    by_name = client.get(f"/scenarios/high_press/players/{any_player['name'].replace(' ', '%20')}").json()
+    name_encoded = any_player["name"].replace(" ", "%20")
+    by_name = client.get(
+        f"/scenarios/high_press/players/{name_encoded}"
+    ).json()
     assert by_name["player"]["id"] == any_player["id"]
 
 
