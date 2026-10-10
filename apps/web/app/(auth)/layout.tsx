@@ -17,7 +17,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <div>Mock provider is the default. No keys required to explore.</div>
         </div>
       </aside>
-      <main className="flex items-center justify-center px-6 py-12">
+      <main id="main" className="flex items-center justify-center px-6 py-12 scroll-mt-16">
         <div className="w-full max-w-sm animate-fade-in">{children}</div>
       </main>
     </div>

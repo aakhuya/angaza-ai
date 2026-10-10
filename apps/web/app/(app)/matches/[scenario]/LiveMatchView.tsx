@@ -51,7 +51,7 @@ export function LiveMatchView({
       {keyMoment && <KeyMoment insight={keyMoment} />}
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+        <div className="order-2 space-y-6 lg:order-1 lg:col-span-2">
           <div className="rounded-lg border border-border bg-bg-surface p-5">
             <h2 className="text-sm font-medium">Momentum</h2>
             <p className="mt-1 text-xs text-text-muted">
@@ -78,7 +78,7 @@ export function LiveMatchView({
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="order-1 space-y-4 lg:order-2">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-medium">Intelligence feed</h2>
             <span className="font-mono text-2xs text-text-faint">{insights.length}</span>

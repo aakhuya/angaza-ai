@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { getExecutions } from "@/features/agents/client";
+import { getExecutions } from "@/features/agents/server";
 
 const STAGES = ["INGEST", "INTERPRET", "EXPLAIN", "VERIFY", "PERSONALIZE", "RENDER"];
 

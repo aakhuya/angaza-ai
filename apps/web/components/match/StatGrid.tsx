@@ -14,19 +14,22 @@ const ROWS: Array<[string, (s: MatchState) => [string | number, string | number]
 export function StatGrid({ state }: { state: MatchState }) {
   return (
     <div className="overflow-hidden rounded-lg border border-border">
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center bg-bg-elevated px-4 py-2.5 text-2xs uppercase tracking-wider text-text-faint">
-        <span>{state.home.team_id}</span>
-        <span className="text-center">Stat</span>
-        <span className="text-right">{state.away.team_id}</span>
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center bg-bg-elevated px-4 py-2.5 text-2xs uppercase tracking-wider text-text-faint">
+        <span className="truncate">{state.home.team_id}</span>
+        <span className="px-3 text-center">Stat</span>
+        <span className="truncate text-right">{state.away.team_id}</span>
       </div>
       <div className="divide-y divide-border bg-bg-surface">
         {ROWS.map(([label, fn]) => {
           const [h, a] = fn(state);
           return (
-            <div key={label} className="grid grid-cols-[1fr_auto_1fr] items-center px-4 py-2.5">
-              <span className="font-mono text-sm tabular-nums">{h}</span>
-              <span className="px-4 text-center text-xs text-text-muted">{label}</span>
-              <span className="text-right font-mono text-sm tabular-nums">{a}</span>
+            <div
+              key={label}
+              className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-4 py-2.5"
+            >
+              <span className="truncate font-mono text-sm tabular-nums">{h}</span>
+              <span className="whitespace-nowrap px-3 text-center text-xs text-text-muted">{label}</span>
+              <span className="truncate text-right font-mono text-sm tabular-nums">{a}</span>
             </div>
           );
         })}

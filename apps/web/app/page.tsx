@@ -14,7 +14,7 @@ export default function LandingPage() {
           <p className="mt-6 max-w-2xl text-base text-text-muted">
             A football match intelligence platform that turns synthetic events
             into explainable, personalized insight. Deterministic analytics do
-            the math; a small set of agents explain <em className="text-text">why</em> a
+            the math; a small set of agents explain <strong className="font-medium text-text">why</strong> a
             moment mattered — and a verification layer refuses to publish
             anything that cannot be grounded in the facts.
           </p>

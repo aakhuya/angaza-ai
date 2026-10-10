@@ -137,11 +137,11 @@ export default async function RecapPage({
         <CardBody>
           <dl className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3">
             {Object.entries(body.statistics).map(([key, [h, a]]) => (
-              <div key={key}>
+              <div key={key} className="min-w-0">
                 <dt className="text-2xs uppercase tracking-wider text-text-faint">
                   {key.replace(/_/g, " ")}
                 </dt>
-                <dd className="mt-0.5 font-mono text-sm text-text">{h} / {a}</dd>
+                <dd className="mt-0.5 truncate font-mono text-sm text-text tabular-nums">{h} / {a}</dd>
               </div>
             ))}
           </dl>

@@ -4,12 +4,12 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { getPreferences, getProfile } from "@/features/settings/server";
-import { api } from "@/lib/api";
+import { serverApi } from "@/lib/api-server";
 import type { MatchState, Preferences, Profile } from "@/types/api";
 
 async function fetchRecentState(): Promise<MatchState | null> {
   try {
-    const res = await api.get<{ scenario: string; seed: number; state: MatchState }>("/scenarios/balanced/snapshot?seed=42");
+    const res = await serverApi.get<{ scenario: string; seed: number; state: MatchState }>("/scenarios/balanced/snapshot?seed=42");
     return res.state;
   } catch {
     return null;
@@ -105,7 +105,7 @@ function SnapshotGrid({ state }: { state: MatchState }) {
       {rows.map(([label, value]) => (
         <div key={label}>
           <dt className="text-2xs uppercase tracking-wider text-text-faint">{label}</dt>
-          <dd className="mt-0.5 font-mono text-sm text-text">{value}</dd>
+          <dd className="mt-0.5 truncate font-mono text-sm text-text" title={String(value)}>{value}</dd>
         </div>
       ))}
     </dl>

@@ -1,10 +1,12 @@
-import { api } from "@/lib/api";
+import "server-only";
+
+import { serverApi } from "@/lib/api-server";
 import type { MatchState } from "@/types/api";
 
 export type ScenarioSnapshot = { scenario: string; seed: number; state: MatchState };
 
 export function getSnapshot(scenario: string, seed = 42) {
-  return api.get<ScenarioSnapshot>(`/scenarios/${scenario}/snapshot?seed=${seed}`);
+  return serverApi.get<ScenarioSnapshot>(`/scenarios/${scenario}/snapshot?seed=${seed}`);
 }
 
 export type Recap = {
@@ -22,7 +24,7 @@ export type Recap = {
 };
 
 export function getRecap(scenario: string, seed = 42) {
-  return api.get<{ scenario: string; seed: number; recap: Recap }>(
+  return serverApi.get<{ scenario: string; seed: number; recap: Recap }>(
     `/scenarios/${scenario}/recap?seed=${seed}`,
   );
 }
@@ -39,5 +41,7 @@ export type PlayerDetail = {
 };
 
 export function getPlayer(scenario: string, playerId: string, seed = 42) {
-  return api.get<PlayerDetail>(`/scenarios/${scenario}/players/${encodeURIComponent(playerId)}?seed=${seed}`);
+  return serverApi.get<PlayerDetail>(
+    `/scenarios/${scenario}/players/${encodeURIComponent(playerId)}?seed=${seed}`,
+  );
 }
