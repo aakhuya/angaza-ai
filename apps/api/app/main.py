@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.agents import router as agents_router
 from app.api.auth import router as auth_router
+from app.api.oauth import router as oauth_router
+from app.api.password import router as password_router
 from app.api.health import router as health_router
 from app.api.matches import router as matches_router
 from app.api.scenarios import router as scenarios_router
@@ -38,6 +40,8 @@ def create_app() -> FastAPI:
     app.include_router(agents_router)
     app.include_router(auth_router)
     app.include_router(scenarios_router)
+    app.include_router(oauth_router)
+    app.include_router(password_router)
 
     return app
 

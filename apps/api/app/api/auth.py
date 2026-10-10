@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy import select
@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.api.deps import ACCESS_COOKIE, REFRESH_COOKIE, get_current_user
 from app.core.config import get_settings
 from app.core.logging import get_logger
+from app.core.password_policy import assert_valid as assert_password_valid
 from app.core.security import (
     create_access_token,
     hash_password,
@@ -18,10 +19,10 @@ from app.models.session import get_db
 from app.models.user import Preferences, Profile, RefreshToken, User
 from app.schemas.auth import (
     LoginRequest,
-    PreferencesPatch,
-    PreferencesResponse,
     ProfilePatch,
     ProfileResponse,
+    PreferencesPatch,
+    PreferencesResponse,
     SignupRequest,
     UserResponse,
 )
@@ -32,7 +33,6 @@ log = get_logger("angaza.auth")
 
 def _set_auth_cookies(response: Response, access: str, refresh: str) -> None:
     settings = get_settings()
-    # HttpOnly + SameSite=Lax. Secure is enabled outside dev.
     common = dict(httponly=True, samesite="lax", secure=not settings.is_dev, path="/")
     response.set_cookie(
         ACCESS_COOKIE, access, max_age=settings.jwt_access_ttl_minutes * 60, **common
@@ -54,7 +54,7 @@ def _issue_refresh(db: Session, user: User) -> str:
         RefreshToken(
             user_id=user.id,
             token_hash=hashed,
-            expires_at=datetime.now(UTC)
+            expires_at=datetime.now(timezone.utc)
             + timedelta(days=settings.jwt_refresh_ttl_days),
         )
     )
@@ -70,21 +70,23 @@ def _user_response(user: User) -> UserResponse:
     )
 
 
-@router.post(
-    "/auth/signup",
-    response_model=UserResponse,
-    status_code=status.HTTP_201_CREATED,
-)
+@router.post("/auth/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def signup(
     payload: SignupRequest,
     response: Response,
     db: Session = Depends(get_db),
 ) -> UserResponse:
-    existing = db.scalar(select(User).where(User.email == payload.email))
+    try:
+        assert_password_valid(payload.password)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    email = payload.email.lower()
+    existing = db.scalar(select(User).where(User.email == email))
     if existing is not None:
         raise HTTPException(status_code=409, detail="Email already registered")
 
-    user = User(email=payload.email, password_hash=hash_password(payload.password))
+    user = User(email=email, password_hash=hash_password(payload.password))
     user.profile = Profile(display_name=payload.display_name)
     user.preferences = Preferences()
     db.add(user)
@@ -100,8 +102,13 @@ def signup(
 
 
 @router.post("/auth/login", response_model=UserResponse)
-def login(payload: LoginRequest, response: Response, db: Session = Depends(get_db)) -> UserResponse:
-    user = db.scalar(select(User).where(User.email == payload.email))
+def login(
+    payload: LoginRequest,
+    response: Response,
+    db: Session = Depends(get_db),
+) -> UserResponse:
+    email = payload.email.lower()
+    user = db.scalar(select(User).where(User.email == email))
     if user is None or not verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
@@ -125,7 +132,7 @@ def logout(
         hashed = hash_refresh_token(raw)
         token = db.scalar(select(RefreshToken).where(RefreshToken.token_hash == hashed))
         if token is not None and token.user_id == user.id:
-            token.revoked_at = datetime.now(UTC)
+            token.revoked_at = datetime.now(timezone.utc)
             db.commit()
     _clear_auth_cookies(response)
 
@@ -142,17 +149,16 @@ def refresh(
 
     hashed = hash_refresh_token(raw)
     token = db.scalar(select(RefreshToken).where(RefreshToken.token_hash == hashed))
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     if token is None or token.revoked_at is not None:
         raise HTTPException(status_code=401, detail="Invalid session")
-    if token.expires_at.replace(tzinfo=UTC) < now:
+    if token.expires_at.replace(tzinfo=timezone.utc) < now:
         raise HTTPException(status_code=401, detail="Session expired")
 
     user = db.get(User, token.user_id)
     if user is None or not user.is_active:
         raise HTTPException(status_code=401, detail="Invalid session")
 
-    # Rotate: revoke old, issue new.
     token.revoked_at = now
     new_raw = _issue_refresh(db, user)
     db.commit()
