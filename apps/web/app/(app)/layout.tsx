@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { AppNav } from "@/components/AppNav";
-import { getMe } from "@/lib/auth";
+import { getMe } from "@/lib/auth.server";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getMe();
