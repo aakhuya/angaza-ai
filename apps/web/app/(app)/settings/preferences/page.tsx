@@ -1,5 +1,5 @@
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
-import { getPreferences } from "@/features/settings/client";
+import { getPreferences } from "@/features/settings/server";
 import { PreferencesForm } from "@/features/settings/PreferencesForm";
 
 export default async function PreferencesPage() {

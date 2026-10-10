@@ -1,5 +1,5 @@
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
-import { getProfile } from "@/features/settings/client";
+import { getProfile } from "@/features/settings/server";
 import { ProfileForm } from "@/features/settings/ProfileForm";
 
 export default async function ProfilePage() {

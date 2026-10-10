@@ -11,8 +11,11 @@ import { getSnapshot } from "@/features/match/server";
 
 export default async function AnalysisPage({
   params,
-}: { params: { scenario: string } }) {
-  const meta = SCENARIOS.find((s) => s.id === params.scenario);
+}: {
+  params: Promise<{ scenario: string }>;
+}) {
+  const { scenario } = await params;
+  const meta = SCENARIOS.find((s) => s.id === scenario);
   if (!meta) notFound();
 
   let snapshot;

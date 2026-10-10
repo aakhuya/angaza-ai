@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
-import { logout } from "@/lib/auth";
+import { logout } from "@/lib/auth.client";
 import type { User } from "@/types/api";
 
 const links = [

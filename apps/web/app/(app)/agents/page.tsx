@@ -3,19 +3,16 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { getExecutions } from "@/features/agents/client";
 
-const STAGES = [
-  "INGEST",
-  "INTERPRET",
-  "EXPLAIN",
-  "VERIFY",
-  "PERSONALIZE",
-  "RENDER",
-];
+const STAGES = ["INGEST", "INTERPRET", "EXPLAIN", "VERIFY", "PERSONALIZE", "RENDER"];
 
 export default async function AgentsPage({
   searchParams,
-}: { searchParams: { match_id?: string } }) {
-  const matchId = searchParams.match_id ?? "balanced-42-analyst";
+}: {
+  searchParams: Promise<{ match_id?: string }>;
+}) {
+  const { match_id } = await searchParams;
+  const matchId = match_id ?? "balanced-42-analyst";
+
   let payload: Awaited<ReturnType<typeof getExecutions>> | null = null;
   try {
     payload = await getExecutions(matchId);

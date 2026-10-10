@@ -7,25 +7,31 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ApiError } from "@/lib/api";
-import { login, signup } from "@/lib/auth";
+import { login, signup } from "@/lib/auth.client";
 
 type Mode = "login" | "signup";
 
 export function AuthForm({ mode }: { mode: Mode }) {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    const data = new FormData(e.currentTarget);
+    const email = String(data.get("email") ?? "").trim();
+    const password = String(data.get("password") ?? "");
+    const displayName = String(data.get("display_name") ?? "").trim();
+
     try {
-      if (mode === "signup") await signup(email, password, displayName);
-      else await login(email, password);
+      if (mode === "signup") {
+        await signup(email, password, displayName);
+      } else {
+        await login(email, password);
+      }
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
@@ -54,8 +60,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
             label="Display name"
             name="display_name"
             autoComplete="name"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
+            defaultValue=""
           />
         )}
         <Input
@@ -64,8 +69,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
           type="email"
           autoComplete="email"
           required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          defaultValue=""
         />
         <Input
           label="Password"
@@ -74,12 +78,14 @@ export function AuthForm({ mode }: { mode: Mode }) {
           autoComplete={mode === "login" ? "current-password" : "new-password"}
           required
           minLength={mode === "signup" ? 8 : undefined}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          defaultValue=""
         />
 
         {error && (
-          <div role="alert" className="rounded-md border border-danger-soft bg-danger/10 px-3 py-2 text-sm text-danger">
+          <div
+            role="alert"
+            className="rounded-md border border-danger-soft bg-danger/10 px-3 py-2 text-sm text-danger"
+          >
             {error}
           </div>
         )}
@@ -91,9 +97,19 @@ export function AuthForm({ mode }: { mode: Mode }) {
 
       <p className="mt-6 text-sm text-text-muted">
         {mode === "login" ? (
-          <>No account? <Link className="text-accent hover:underline" href="/signup">Sign up</Link></>
+          <>
+            No account?{" "}
+            <Link className="text-accent hover:underline" href="/signup">
+              Sign up
+            </Link>
+          </>
         ) : (
-          <>Already registered? <Link className="text-accent hover:underline" href="/login">Sign in</Link></>
+          <>
+            Already registered?{" "}
+            <Link className="text-accent hover:underline" href="/login">
+              Sign in
+            </Link>
+          </>
         )}
       </p>
     </div>

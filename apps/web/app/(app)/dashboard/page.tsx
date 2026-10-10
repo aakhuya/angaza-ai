@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
-import { getPreferences, getProfile } from "@/features/settings/client";
+import { getPreferences, getProfile } from "@/features/settings/server";
 import { api } from "@/lib/api";
 import type { MatchState, Preferences, Profile } from "@/types/api";
 

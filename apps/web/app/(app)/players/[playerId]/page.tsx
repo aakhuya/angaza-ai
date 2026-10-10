@@ -9,18 +9,21 @@ import { getPlayer } from "@/features/match/server";
 import { SCENARIOS } from "@/features/matches/scenarios";
 
 export default async function PlayerPage({
-  params, searchParams,
+  params,
+  searchParams,
 }: {
-  params: { playerId: string };
-  searchParams: { scenario?: string };
+  params: Promise<{ playerId: string }>;
+  searchParams: Promise<{ scenario?: string }>;
 }) {
-  const scenario = SCENARIOS.find((s) => s.id === searchParams.scenario)?.id ?? "balanced";
+  const { playerId } = await params;
+  const { scenario: scenarioQuery } = await searchParams;
+  const scenario = SCENARIOS.find((s) => s.id === scenarioQuery)?.id ?? "balanced";
 
   let detail;
   try {
-    detail = await getPlayer(scenario, params.playerId, 42);
+    detail = await getPlayer(scenario, playerId, 42);
   } catch {
-    return <ErrorState title="Player not found" description={`No record for “${params.playerId}”.`} />;
+    return <ErrorState title="Player not found" description={`No record for “${playerId}”.`} />;
   }
 
   const { player, stats } = detail;
