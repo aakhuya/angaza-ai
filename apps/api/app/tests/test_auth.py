@@ -6,7 +6,6 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-
 # A password that satisfies the policy: 8+ chars, 3 of 4 classes.
 STRONG = "Correct-Horse1"
 
@@ -30,8 +29,8 @@ def client(monkeypatch):
         bind=engine, autoflush=False, autocommit=False, expire_on_commit=False
     )
 
-    from app.models.base import Base
     from app.models import entities, user  # noqa: F401
+    from app.models.base import Base
     Base.metadata.create_all(engine)
 
     from app.api import deps

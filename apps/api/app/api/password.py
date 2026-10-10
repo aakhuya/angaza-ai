@@ -1,6 +1,6 @@
 import hashlib
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.logging import get_logger
-from app.core.password_policy import evaluate
 from app.core.security import hash_password
 from app.models.session import get_db
 from app.models.user import PasswordResetToken, User
@@ -49,7 +48,7 @@ def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db
         PasswordResetToken(
             user_id=user.id,
             token_hash=hashed,
-            expires_at=datetime.now(timezone.utc) + timedelta(minutes=RESET_TTL_MINUTES),
+            expires_at=datetime.now(UTC) + timedelta(minutes=RESET_TTL_MINUTES),
         )
     )
     db.commit()
@@ -68,10 +67,10 @@ def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db
 def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)) -> dict:
     hashed = hashlib.sha256(payload.token.encode()).hexdigest()
     token = db.scalar(select(PasswordResetToken).where(PasswordResetToken.token_hash == hashed))
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     if token is None or token.used_at is not None:
         raise HTTPException(status_code=400, detail="Invalid or expired reset link")
-    if token.expires_at.replace(tzinfo=timezone.utc) < now:
+    if token.expires_at.replace(tzinfo=UTC) < now:
         raise HTTPException(status_code=400, detail="Invalid or expired reset link")
 
     user = db.get(User, token.user_id)

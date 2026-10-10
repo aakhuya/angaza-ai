@@ -17,7 +17,11 @@ class PasswordCheckResponseFactory:
     @staticmethod
     def from_password(p: str) -> PasswordCheckResponse:
         r = evaluate(p)
-        return PasswordCheckResponse(valid=r["valid"], rules=r["rules"], classes_met=r["classes_met"])
+        return PasswordCheckResponse(
+            valid=r["valid"],
+            rules=r["rules"],
+            classes_met=r["classes_met"],
+        )
 
 
 # --- forgot / reset ---
