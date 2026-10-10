@@ -57,7 +57,7 @@ function extractDetail(body: unknown, status: number): string {
   return `Request failed (${status})`;
 }
 
-export const apiServer = {
+export const serverApi = {
   get: <T,>(path: string, opts: FetchOptions = {}) => serverFetch<T>(path, opts),
   post: <T,>(path: string, body: unknown, opts: FetchOptions = {}) =>
     serverFetch<T>(path, {

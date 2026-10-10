@@ -3,64 +3,60 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000"
 export class ApiError extends Error {
   constructor(public status: number, message: string, public body?: unknown) {
     super(message);
+    this.name = "ApiError";
   }
 }
 
-type Json = Record<string, unknown>;
+type JsonObject = Record<string, unknown>;
 
-export type RequestOptions = RequestInit & {
-  /**
-   * Server-only: the value of the incoming `cookie` header to forward to the
-   * API. Pass `null` (default) from client code, which relies on
-   * `credentials: "include"` instead.
-   */
-  cookieHeader?: string | null;
-};
-
-export async function apiRequest<T>(path: string, init: RequestOptions = {}): Promise<T> {
-  const { cookieHeader, ...rest } = init;
-  const method = (rest.method ?? "GET").toUpperCase();
-  const hasBody = rest.body !== undefined;
-
-  const headers: Record<string, string> = {
-    ...(rest.headers as Record<string, string> | undefined),
-  };
-  if (hasBody && !headers["content-type"]) headers["content-type"] = "application/json";
-  if (cookieHeader) headers["cookie"] = cookieHeader;
-
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
-    ...rest,
-    method,
-    credentials: cookieHeader ? "omit" : "include",
-    headers,
+    ...init,
+    credentials: "include",
+    headers: {
+      "content-type": "application/json",
+      ...(init.headers ?? {}),
+    },
     cache: "no-store",
   });
 
   const text = await res.text();
-  const body = text ? safeJson(text) : undefined;
+  const parsed: unknown = text ? safeJson(text) : undefined;
+
   if (!res.ok) {
-    const msg =
-      (body && typeof body === "object" && "detail" in (body as Json) && String((body as Json).detail)) ||
-      `Request failed (${res.status})`;
-    throw new ApiError(res.status, msg, body);
+    throw new ApiError(res.status, extractMessage(parsed, res.status), parsed);
   }
-  return body as T;
+
+  return parsed as T;
 }
 
 function safeJson(text: string): unknown {
-  try { return JSON.parse(text); } catch { return text; }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+}
+
+function extractMessage(body: unknown, status: number): string {
+  if (body && typeof body === "object" && !Array.isArray(body)) {
+    const detail = (body as JsonObject).detail;
+    if (typeof detail === "string" && detail.length > 0) {
+      return detail;
+    }
+  }
+  return `Request failed (${status})`;
 }
 
 export const api = {
-  get: <T,>(path: string, opts?: RequestOptions) => apiRequest<T>(path, opts),
-  post: <T,>(path: string, body?: unknown, opts?: RequestOptions) =>
-    apiRequest<T>(path, {
-      ...opts,
+  get: <T,>(path: string) => request<T>(path),
+  post: <T,>(path: string, body?: unknown) =>
+    request<T>(path, {
       method: "POST",
       body: body !== undefined ? JSON.stringify(body) : undefined,
     }),
-  patch: <T,>(path: string, body: unknown, opts?: RequestOptions) =>
-    apiRequest<T>(path, { ...opts, method: "PATCH", body: JSON.stringify(body) }),
+  patch: <T,>(path: string, body: unknown) =>
+    request<T>(path, { method: "PATCH", body: JSON.stringify(body) }),
 };
 
 export const API_BASE_URL = API_BASE;

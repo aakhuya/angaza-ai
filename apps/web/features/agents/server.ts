@@ -1,5 +1,3 @@
-import "server-only";
-
 import { serverApi } from "@/lib/api-server";
 import type { AgentExecution } from "@/types/api";
 

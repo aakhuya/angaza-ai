@@ -3,13 +3,14 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
-import { getPreferences, getProfile } from "@/features/settings/server";
 import { serverApi } from "@/lib/api-server";
 import type { MatchState, Preferences, Profile } from "@/types/api";
 
 async function fetchRecentState(): Promise<MatchState | null> {
   try {
-    const res = await serverApi.get<{ scenario: string; seed: number; state: MatchState }>("/scenarios/balanced/snapshot?seed=42");
+    const res = await serverApi.get<{ scenario: string; seed: number; state: MatchState }>(
+      "/scenarios/balanced/snapshot?seed=42",
+    );
     return res.state;
   } catch {
     return null;
@@ -18,8 +19,12 @@ async function fetchRecentState(): Promise<MatchState | null> {
 
 export default async function DashboardPage() {
   const [profile, preferences, state] = await Promise.all([
-    getProfile().catch((): Profile => ({ display_name: "", favorite_team: "", favorite_player: "" })),
-    getPreferences().catch((): Preferences => ({ viewer_mode: "analyst", language: "en", explanation_detail: "standard" })),
+    serverApi.get<Profile>("/profile").catch(
+      (): Profile => ({ display_name: "", favorite_team: "", favorite_player: "" }),
+    ),
+    serverApi.get<Preferences>("/preferences").catch(
+      (): Preferences => ({ viewer_mode: "analyst", language: "en", explanation_detail: "standard" }),
+    ),
     fetchRecentState(),
   ]);
 
@@ -105,7 +110,9 @@ function SnapshotGrid({ state }: { state: MatchState }) {
       {rows.map(([label, value]) => (
         <div key={label}>
           <dt className="text-2xs uppercase tracking-wider text-text-faint">{label}</dt>
-          <dd className="mt-0.5 truncate font-mono text-sm text-text" title={String(value)}>{value}</dd>
+          <dd className="mt-0.5 truncate font-mono text-sm text-text" title={String(value)}>
+            {value}
+          </dd>
         </div>
       ))}
     </dl>
