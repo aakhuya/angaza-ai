@@ -2,8 +2,8 @@
 
 import { API_BASE_URL } from "@/lib/api";
 
-// These buttons start a real OAuth flow on the backend. When credentials are
-// not configured the backend returns a clear 503 rather than faking a login.
+// Real OAuth start routes on the backend. When credentials are not configured
+// the backend returns a clear 503 rather than faking a login.
 async function start(provider: "google" | "apple") {
   try {
     const res = await fetch(`${API_BASE_URL}/auth/oauth/${provider}/start`, {
@@ -26,20 +26,24 @@ async function start(provider: "google" | "apple") {
 
 export function OAuthButtons() {
   return (
-    <div className="grid gap-2 sm:grid-cols-2">
+    <div className="grid grid-cols-2 gap-2">
       <button
         type="button"
         onClick={() => start("google")}
-        className="flex h-11 items-center justify-center gap-2 rounded-md border border-border bg-bg-surface text-sm font-medium text-text hover:border-border-strong focus-ring"
+        className="flex h-11 items-center justify-center gap-2 rounded-md border border-border bg-bg-surface text-sm font-medium text-text transition-colors hover:border-border-strong hover:bg-bg-elevated focus-ring"
       >
-        <GoogleIcon /> Continue with Google
+        <GoogleIcon />
+        <span className="hidden sm:inline">Google</span>
+        <span className="sm:hidden">Google</span>
       </button>
       <button
         type="button"
         onClick={() => start("apple")}
-        className="flex h-11 items-center justify-center gap-2 rounded-md border border-border bg-bg-surface text-sm font-medium text-text hover:border-border-strong focus-ring"
+        className="flex h-11 items-center justify-center gap-2 rounded-md border border-border bg-bg-surface text-sm font-medium text-text transition-colors hover:border-border-strong hover:bg-bg-elevated focus-ring"
       >
-        <AppleIcon /> Continue with Apple
+        <AppleIcon />
+        <span className="hidden sm:inline">Apple</span>
+        <span className="sm:hidden">Apple</span>
       </button>
     </div>
   );

@@ -4,7 +4,6 @@ import { HeroBackdrop } from "@/components/marketing/HeroBackdrop";
 import { HeroInsightCard } from "@/components/marketing/HeroInsightCard";
 import { FeatureStrip } from "@/components/marketing/FeatureStrip";
 import { Logo } from "@/components/marketing/Logo";
-import { PipelineDiagram } from "@/components/marketing/PipelineDiagram";
 import { Button } from "@/components/ui/Button";
 import { findHeroImage } from "@/lib/heroImage";
 
@@ -19,52 +18,42 @@ export default function LandingPage() {
       <section className="relative isolate min-h-[100svh] overflow-hidden">
         <HeroBackdrop image={heroImage} />
 
-        {/*
-          Three-zone vertical grid:
-          - top:    spacer so the header never overlaps the headline
-          - middle: headline block, anchored to ~1/3 down
-          - bottom: CTA + preview card, anchored to the base
-        */}
-        <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col px-4 sm:px-6 lg:px-8">
-          <div className="pt-28 sm:pt-32 lg:pt-40" />
+        <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col px-4 pt-24 sm:px-6 sm:pt-28 lg:px-8 lg:pt-32">
+          {/*
+            Upper half: headline on the left, insight card on the right.
+            On mobile the card stacks below the headline, still inside the
+            upper half — CTAs live at the base of the frame.
+          */}
+          <div className="grid gap-10 lg:grid-cols-12 lg:items-start lg:gap-12">
+            <div className="lg:col-span-7">
+              <h1 className="text-[2.6rem] font-semibold leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">
+                Every moment
+                <br />
+                <span className="text-accent">has a story.</span>
+              </h1>
 
-          <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-bg/60 px-3 py-1 font-mono text-2xs uppercase tracking-[0.15em] text-text-muted backdrop-blur">
-              <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-success" aria-hidden />
-              Live pipeline · v0.1
-            </span>
-
-            <h1 className="mt-6 text-[2.75rem] font-semibold leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">
-              Every moment
-              <br />
-              <span className="text-accent">has a story.</span>
-            </h1>
-
-            <p className="mt-6 max-w-xl text-base text-text-muted sm:text-lg">
-              Angaza AI turns synthetic football events into explainable match
-              intelligence — not just what happened, but{" "}
-              <span className="text-text">why</span>.
-            </p>
-          </div>
-
-          <div className="mt-auto grid gap-8 pb-12 pt-12 lg:grid-cols-12 lg:items-end lg:gap-10 lg:pb-16">
-            <div className="lg:col-span-6">
-              <div className="flex flex-wrap items-center gap-3">
-                <Link href="/signup"><Button size="lg">Start exploring</Button></Link>
-                <Link href="/login"><Button size="lg" variant="secondary">Sign in</Button></Link>
-              </div>
-              <p className="mt-5 max-w-md text-xs text-text-faint">
-                Demo runs on synthetic match data. No real matches or copyrighted content are used.
+              <p className="mt-6 max-w-xl text-base leading-relaxed text-text-muted sm:text-lg">
+                Angaza AI turns football events into explainable match
+                intelligence — not just what happened, but{" "}
+                <span className="text-text">why</span>.
               </p>
             </div>
 
-            <div className="lg:col-span-6 lg:justify-self-end">
+            <div className="lg:col-span-5 lg:justify-self-end">
               <HeroInsightCard />
             </div>
           </div>
+
+          {/* CTA strip anchored to the base of the hero. */}
+          <div className="mt-auto flex flex-wrap items-center gap-3 pb-14 pt-16 lg:pb-20">
+            <Link href="/signup"><Button size="lg">Start exploring</Button></Link>
+            <Link href="/login"><Button size="lg" variant="secondary">Sign in</Button></Link>
+            <p className="w-full text-xs text-text-faint sm:w-auto sm:pl-2">
+              Demo runs on synthetic match data. No real matches or copyrighted content are used.
+            </p>
+          </div>
         </div>
 
-        {/* Fade the bottom edge into the next section — one thin band. */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-x-0 bottom-0 h-16"
@@ -77,35 +66,19 @@ export default function LandingPage() {
       {/* ─────────────── FEATURES ─────────────── */}
       <section id="features" className="border-b border-border">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
-          <SectionHeading
-            kicker="Capabilities"
-            title="Built for the moments that matter"
-            body="A purpose-built pipeline, not a chatbot wrapped around a stats table."
-          />
+          <div className="max-w-2xl">
+            <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">
+              Capabilities
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+              Built for the moments that matter
+            </h2>
+            <p className="mt-3 text-sm text-text-muted">
+              A purpose-built pipeline — not a chatbot wrapped around a stats table.
+            </p>
+          </div>
           <div className="mt-8">
             <FeatureStrip />
-          </div>
-        </div>
-      </section>
-
-      {/* ─────────────── PIPELINE ─────────────── */}
-      <section id="pipeline" className="relative">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.30]"
-          style={{
-            backgroundImage:
-              "radial-gradient(900px 300px at 90% 0%, rgba(245,179,63,0.10), transparent 60%)",
-          }}
-        />
-        <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
-          <SectionHeading
-            kicker="Architecture"
-            title="Five-stage intelligence pipeline"
-            body="Deterministic analytics do the math. Agents explain why it mattered. A verification layer refuses to publish anything it can't ground."
-          />
-          <div className="mt-8">
-            <PipelineDiagram />
           </div>
         </div>
       </section>
@@ -130,16 +103,6 @@ function Header() {
         </div>
       </div>
     </header>
-  );
-}
-
-function SectionHeading({ kicker, title, body }: { kicker: string; title: string; body?: string }) {
-  return (
-    <div className="max-w-2xl">
-      <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">{kicker}</p>
-      <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>
-      {body && <p className="mt-3 text-sm text-text-muted">{body}</p>}
-    </div>
   );
 }
 

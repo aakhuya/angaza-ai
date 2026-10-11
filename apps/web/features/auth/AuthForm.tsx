@@ -70,28 +70,21 @@ export function AuthForm({ mode }: { mode: Mode }) {
     }
   }
 
+  const isLogin = mode === "login";
+
   return (
-    <div className="animate-fade-in pt-1 sm:pt-2">
-      <h1 className="text-2xl font-semibold tracking-tight">
-        {mode === "login" ? "Welcome Back" : "Create Your Account"}
+    <div className="animate-fade-in">
+      <h1 className="text-2xl font-semibold tracking-tight sm:text-[1.7rem]">
+        {isLogin ? "Welcome back" : "Create your account"}
       </h1>
-      <p className="mt-1 text-sm text-text-muted">
-        {mode === "login"
-          ? "Sign in to continue."
-          : "Join the platform and start exploring football intelligence."}
+      <p className="mt-1.5 text-sm text-text-muted">
+        {isLogin
+          ? "Sign in to continue exploring match intelligence."
+          : "Set up your personalized match intelligence experience."}
       </p>
 
-      <div className="mt-6">
-        <OAuthButtons />
-        <div className="my-5 flex items-center gap-3">
-          <span className="h-px flex-1 bg-border" aria-hidden />
-          <span className="text-2xs uppercase tracking-wider text-text-faint">or</span>
-          <span className="h-px flex-1 bg-border" aria-hidden />
-        </div>
-      </div>
-
-      <form className="space-y-4" onSubmit={onSubmit} noValidate>
-        {mode === "signup" && (
+      <form className="mt-6 space-y-3.5" onSubmit={onSubmit} noValidate>
+        {!isLogin && (
           <Input
             label="Full name"
             name="display_name"
@@ -115,55 +108,89 @@ export function AuthForm({ mode }: { mode: Mode }) {
           placeholder="you@example.com"
         />
 
-        {mode === "signup" ? (
-          <>
-            <PasswordField value={password} onChange={setPassword} autoComplete="new-password" label="Password" />
-            <PasswordField value={confirm} onChange={setConfirm} autoComplete="new-password" showRequirements={false} label="Confirm Password" />
-            {confirmError && <p className="text-xs text-danger" role="alert">{confirmError}</p>}
-          </>
+        {isLogin ? (
+          <PasswordField
+            value={password}
+            onChange={setPassword}
+            autoComplete="current-password"
+            showRequirements={false}
+            label="Password"
+          />
         ) : (
-          <PasswordField value={password} onChange={setPassword} autoComplete="current-password" showRequirements={false} label="Password" />
+          <>
+            <PasswordField
+              value={password}
+              onChange={setPassword}
+              autoComplete="new-password"
+              label="Password"
+            />
+            <PasswordField
+              value={confirm}
+              onChange={setConfirm}
+              autoComplete="new-password"
+              showRequirements={false}
+              label="Confirm password"
+            />
+            {confirmError && (
+              <p className="text-xs text-danger" role="alert">{confirmError}</p>
+            )}
+          </>
         )}
 
-        <div className="flex items-center justify-between">
-          {mode === "login" ? (
-            <>
-              <label className="flex items-center gap-2 text-xs text-text-muted">
-                <input
-                  type="checkbox"
-                  checked={remember}
-                  onChange={(e) => setRemember(e.target.checked)}
-                  className="h-3.5 w-3.5 rounded border-border bg-bg-surface accent-accent"
-                />
-                Remember me
-              </label>
-              <Link href="/forgot-password" className="text-xs text-accent hover:underline">
-                Forgot password?
-              </Link>
-            </>
-          ) : (
-            <p className="text-xs text-text-faint">
-              By creating an account you agree to use this demo responsibly.
-            </p>
-          )}
-        </div>
+        {isLogin && (
+          <div className="flex items-center justify-between pt-1">
+            <label className="flex items-center gap-2 text-xs text-text-muted">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+                className="h-3.5 w-3.5 rounded border-border bg-bg-surface accent-accent"
+              />
+              Remember me
+            </label>
+            <Link href="/forgot-password" className="text-xs text-accent hover:underline">
+              Forgot password?
+            </Link>
+          </div>
+        )}
 
         {topError && (
-          <div role="alert" className="rounded-md border border-danger-soft bg-danger/10 px-3 py-2 text-sm text-danger">
+          <div
+            role="alert"
+            className="rounded-md border border-danger-soft bg-danger/10 px-3 py-2 text-sm text-danger"
+          >
             {topError}
           </div>
         )}
 
         <Button type="submit" size="lg" loading={loading} className="w-full">
-          {mode === "login" ? "Sign in" : "Create Account"}
+          {isLogin ? "Sign in" : "Create account"}
         </Button>
       </form>
 
+      {/* OAuth last — the primary path is email + password, social is an
+          alternative, not a competing headline action. */}
+      <div className="my-5 flex items-center gap-3">
+        <span className="h-px flex-1 bg-border" aria-hidden />
+        <span className="font-mono text-2xs uppercase tracking-wider text-text-faint">
+          or continue with
+        </span>
+        <span className="h-px flex-1 bg-border" aria-hidden />
+      </div>
+
+      <OAuthButtons />
+
       <p className="mt-6 text-sm text-text-muted">
-        {mode === "login" ? (
-          <>Don&apos;t have an account? <Link className="text-accent hover:underline" href="/signup">Sign up</Link></>
+        {isLogin ? (
+          <>
+            Don&apos;t have an account?{" "}
+            <Link className="text-accent hover:underline" href="/signup">Sign up</Link>
+          </>
         ) : (
-          <>Already have an account? <Link className="text-accent hover:underline" href="/login">Log in</Link></>
+          <>
+            Already have an account?{" "}
+            <Link className="text-accent hover:underline" href="/login">Log in</Link>
+          </>
         )}
       </p>
     </div>
