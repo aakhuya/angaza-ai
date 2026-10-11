@@ -1,9 +1,12 @@
 import Link from "next/link";
 
-import { Logo } from "@/components/marketing/Logo";
+import { HeroBackdrop } from "@/components/marketing/HeroBackdrop";
+import { HeroInsightCard } from "@/components/marketing/HeroInsightCard";
 import { FeatureStrip } from "@/components/marketing/FeatureStrip";
+import { Logo } from "@/components/marketing/Logo";
 import { PipelineDiagram } from "@/components/marketing/PipelineDiagram";
 import { Button } from "@/components/ui/Button";
+import { findHeroImage } from "@/lib/heroImage";
 
 const NAV = [
   { href: "#features", label: "Features" },
@@ -12,75 +15,62 @@ const NAV = [
 ];
 
 export default function LandingPage() {
+  const heroImage = findHeroImage();
+
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-30 border-b border-border bg-bg/80 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Logo />
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Marketing">
-            {NAV.map((n) => (
-              <a
-                key={n.href}
-                href={n.href}
-                className="rounded-md px-3 py-2 text-sm text-text-muted hover:text-text focus-ring"
-              >
-                {n.label}
-              </a>
-            ))}
-          </nav>
-          <div className="flex items-center gap-2">
-            <Link href="/login" className="hidden sm:block">
-              <Button variant="ghost" size="sm">Sign in</Button>
-            </Link>
-            <Link href="/signup">
-              <Button size="sm">Get Started</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header />
 
-      <section className="relative overflow-hidden border-b border-border">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.35]"
-          style={{
-            backgroundImage:
-              "radial-gradient(1200px 400px at 80% -10%, rgba(240,169,58,0.18), transparent 60%), radial-gradient(900px 300px at 10% 110%, rgba(79,189,176,0.10), transparent 60%)",
-          }}
-        />
-        <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-24">
-          <div className="flex flex-col justify-center">
-            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-bg-surface px-3 py-1 font-mono text-2xs uppercase tracking-[0.15em] text-text-muted">
+      {/* ---------------- HERO ---------------- */}
+      <section className="relative isolate min-h-[92svh] overflow-hidden border-b border-border">
+        <HeroBackdrop image={heroImage} />
+
+        <div className="relative mx-auto flex min-h-[92svh] max-w-7xl flex-col justify-end gap-10 px-4 pb-14 pt-24 sm:px-6 lg:grid lg:grid-cols-12 lg:items-end lg:gap-8 lg:pb-20 lg:pt-28 lg:px-8">
+          <div className="lg:col-span-7">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-bg/70 px-3 py-1 font-mono text-2xs uppercase tracking-[0.15em] text-text-muted backdrop-blur">
               <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-success" aria-hidden />
               Live pipeline · v0.1
             </span>
-            <h1 className="mt-6 text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
-              Every Moment<br />
-              <span className="text-accent">Has a Story.</span>
+
+            <h1 className="mt-6 text-5xl font-semibold leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">
+              Every moment
+              <br />
+              <span className="text-accent">has a story.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-base text-text-muted">
-              Angaza AI transforms football events into explainable match intelligence,
-              giving you more than just statistics — you get the <span className="text-text">why</span>.
+
+            <p className="mt-6 max-w-xl text-base text-text-muted sm:text-lg">
+              Angaza AI turns synthetic football events into explainable match
+              intelligence. Not just what happened — the <span className="text-text">why</span>.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/signup"><Button size="lg">Start Exploring</Button></Link>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link href="/signup"><Button size="lg">Start exploring</Button></Link>
               <Link href="/login"><Button size="lg" variant="secondary">Sign in</Button></Link>
             </div>
 
             <p className="mt-6 max-w-lg text-xs text-text-faint">
-              This is a demo using synthetic match data. No real matches or copyrighted content are used.
+              Demo runs on synthetic match data. No real matches or copyrighted content are used.
             </p>
           </div>
 
-          <div className="relative">
-            <HeroPanel />
+          <div className="lg:col-span-5 lg:justify-self-end">
+            <HeroInsightCard />
           </div>
         </div>
+
+        {/* Bottom fade into the next section */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
+          style={{
+            backgroundImage: "linear-gradient(180deg, rgba(10,12,14,0) 0%, rgba(10,12,14,1) 100%)",
+          }}
+        />
       </section>
 
+      {/* ---------------- FEATURES ---------------- */}
       <section id="features" className="border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
           <SectionHeading
             kicker="Capabilities"
             title="Built for the moments that matter"
@@ -92,8 +82,17 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="pipeline" className="border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      {/* ---------------- PIPELINE ---------------- */}
+      <section id="pipeline" className="relative border-b border-border">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.35]"
+          style={{
+            backgroundImage:
+              "radial-gradient(900px 300px at 90% 0%, rgba(240,169,58,0.10), transparent 60%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
           <SectionHeading
             kicker="Architecture"
             title="Five-stage intelligence pipeline"
@@ -105,10 +104,15 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ---------------- ABOUT ---------------- */}
       <section id="about" className="border-b border-border">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-3 lg:px-8">
           <div className="lg:col-span-1">
-            <SectionHeading kicker="Why Angaza" title="The system explains WHY it mattered." body="" />
+            <SectionHeading
+              kicker="Why Angaza"
+              title="The system explains why it mattered."
+              body=""
+            />
           </div>
           <div className="grid gap-4 lg:col-span-2 sm:grid-cols-2">
             {[
@@ -126,15 +130,37 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer className="border-t border-border">
-        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-4 py-10 sm:flex-row sm:items-center sm:px-6 lg:px-8">
-          <Logo />
-          <p className="text-xs text-text-faint">
-            Built for the Microsoft Premier League Hackathon · Synthetic data only.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+
+function Header() {
+  return (
+    <header className="absolute inset-x-0 top-0 z-30">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <Logo />
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Marketing">
+          {NAV.map((n) => (
+            <a
+              key={n.href}
+              href={n.href}
+              className="rounded-md px-3 py-2 text-sm text-text-muted hover:text-text focus-ring"
+            >
+              {n.label}
+            </a>
+          ))}
+        </nav>
+        <div className="flex items-center gap-2">
+          <Link href="/login" className="hidden sm:block">
+            <Button variant="ghost" size="sm">Sign in</Button>
+          </Link>
+          <Link href="/signup"><Button size="sm">Get started</Button></Link>
+        </div>
+      </div>
+    </header>
   );
 }
 
@@ -148,80 +174,15 @@ function SectionHeading({ kicker, title, body }: { kicker: string; title: string
   );
 }
 
-function HeroPanel() {
+function Footer() {
   return (
-    <div className="relative overflow-hidden rounded-xl border border-border bg-bg-surface shadow-pop">
-      <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-danger/80" aria-hidden />
-          <span className="h-2 w-2 rounded-full bg-accent/80" aria-hidden />
-          <span className="h-2 w-2 rounded-full bg-success/80" aria-hidden />
-        </div>
-        <span className="font-mono text-2xs uppercase tracking-wider text-text-faint">
-          match_intelligence · live
-        </span>
+    <footer className="border-t border-border">
+      <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-4 py-10 sm:flex-row sm:items-center sm:px-6 lg:px-8">
+        <Logo />
+        <p className="text-xs text-text-faint">
+          Built for the Microsoft Premier League Hackathon · Synthetic data only.
+        </p>
       </div>
-      <div className="space-y-3 p-4">
-        <PitchPreview />
-        <InsightPreview
-          minute="72:14"
-          category="TACTICAL SHIFT"
-          title="Angaza detected a sustained increase in pressure"
-          body="Team A increased final-third entries while forcing three possession changes in the last four minutes."
-          tone="accent"
-        />
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            ["Possession", "61%"],
-            ["Prog. passes", "34"],
-            ["Pressures", "18"],
-          ].map(([label, value]) => (
-            <div key={label} className="rounded-md border border-border bg-bg-elevated px-3 py-2.5">
-              <div className="text-2xs uppercase tracking-wider text-text-faint">{label}</div>
-              <div className="mt-1 font-mono text-sm text-text">{value}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function PitchPreview() {
-  return (
-    <div className="relative aspect-[16/9] overflow-hidden rounded-md border border-border bg-[#0E1512]">
-      <svg viewBox="0 0 160 90" className="absolute inset-0 h-full w-full" aria-hidden>
-        <rect x="6" y="6" width="148" height="78" fill="none" stroke="#2A3A33" strokeWidth="0.6" />
-        <line x1="80" y1="6" x2="80" y2="84" stroke="#2A3A33" strokeWidth="0.6" />
-        <circle cx="80" cy="45" r="10" fill="none" stroke="#2A3A33" strokeWidth="0.6" />
-        <rect x="6" y="26" width="14" height="38" fill="none" stroke="#2A3A33" strokeWidth="0.6" />
-        <rect x="140" y="26" width="14" height="38" fill="none" stroke="#2A3A33" strokeWidth="0.6" />
-        {[
-          [30, 30], [48, 24], [62, 40], [70, 55], [88, 30], [102, 50], [118, 34], [130, 60],
-        ].map(([x, y], i) => (
-          <circle key={i} cx={x} cy={y} r="1.6" fill={i % 2 ? "#F0A93A" : "#4FBDB0"} />
-        ))}
-        <path d="M62 40 L88 30 L102 50" fill="none" stroke="#F0A93A" strokeWidth="0.9" strokeDasharray="2 2" />
-      </svg>
-    </div>
-  );
-}
-
-function InsightPreview({
-  minute, category, title, body, tone,
-}: { minute: string; category: string; title: string; body: string; tone: "accent" | "teal" }) {
-  const toneClass = tone === "accent" ? "border-accent-soft bg-accent/5" : "border-teal-soft bg-teal/5";
-  const badgeClass = tone === "accent" ? "border-accent-soft text-accent" : "border-teal-soft text-teal";
-  return (
-    <div className={`rounded-md border ${toneClass} p-3`}>
-      <div className="flex items-center gap-3">
-        <span className="font-mono text-2xs tabular-nums text-text-muted">{minute}</span>
-        <span className={`rounded border px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider ${badgeClass}`}>
-          {category}
-        </span>
-      </div>
-      <div className="mt-2 text-sm font-medium">{title}</div>
-      <p className="mt-1 text-xs text-text-muted">{body}</p>
-    </div>
+    </footer>
   );
 }
