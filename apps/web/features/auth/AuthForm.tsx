@@ -71,7 +71,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
   }
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in pt-1 sm:pt-2">
       <h1 className="text-2xl font-semibold tracking-tight">
         {mode === "login" ? "Welcome Back" : "Create Your Account"}
       </h1>

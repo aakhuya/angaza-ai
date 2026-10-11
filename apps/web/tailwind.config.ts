@@ -10,7 +10,7 @@ const config: Config = {
         border: { DEFAULT: "#24282D", strong: "#31363C" },
         text: { DEFAULT: "#F4F5F6", muted: "#A0A6AC", faint: "#7B8288" },
         // Accents.
-        accent: { DEFAULT: "#F0A93A", soft: "#8A5F1E", deep: "#B87A1E" },
+        accent: { DEFAULT: "#F5B33F", soft: "#8A5F1E", deep: "#B87A1E" },
         teal: { DEFAULT: "#4FBDB0", soft: "#1F5A54" },
         danger: { DEFAULT: "#E05555", soft: "#5A2323" },
         success: { DEFAULT: "#4FBE7A", soft: "#1F5A38" },

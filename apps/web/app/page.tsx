@@ -8,12 +8,6 @@ import { PipelineDiagram } from "@/components/marketing/PipelineDiagram";
 import { Button } from "@/components/ui/Button";
 import { findHeroImage } from "@/lib/heroImage";
 
-const NAV = [
-  { href: "#features", label: "Features" },
-  { href: "#pipeline", label: "Pipeline" },
-  { href: "#about", label: "About" },
-];
-
 export default function LandingPage() {
   const heroImage = findHeroImage();
 
@@ -21,18 +15,26 @@ export default function LandingPage() {
     <div className="min-h-screen">
       <Header />
 
-      {/* ---------------- HERO ---------------- */}
-      <section className="relative isolate min-h-[92svh] overflow-hidden border-b border-border">
+      {/* ─────────────── HERO ─────────────── */}
+      <section className="relative isolate min-h-[100svh] overflow-hidden">
         <HeroBackdrop image={heroImage} />
 
-        <div className="relative mx-auto flex min-h-[92svh] max-w-7xl flex-col justify-end gap-10 px-4 pb-14 pt-24 sm:px-6 lg:grid lg:grid-cols-12 lg:items-end lg:gap-8 lg:pb-20 lg:pt-28 lg:px-8">
-          <div className="lg:col-span-7">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-bg/70 px-3 py-1 font-mono text-2xs uppercase tracking-[0.15em] text-text-muted backdrop-blur">
+        {/*
+          Three-zone vertical grid:
+          - top:    spacer so the header never overlaps the headline
+          - middle: headline block, anchored to ~1/3 down
+          - bottom: CTA + preview card, anchored to the base
+        */}
+        <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col px-4 sm:px-6 lg:px-8">
+          <div className="pt-28 sm:pt-32 lg:pt-40" />
+
+          <div className="max-w-3xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-bg/60 px-3 py-1 font-mono text-2xs uppercase tracking-[0.15em] text-text-muted backdrop-blur">
               <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-success" aria-hidden />
               Live pipeline · v0.1
             </span>
 
-            <h1 className="mt-6 text-5xl font-semibold leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">
+            <h1 className="mt-6 text-[2.75rem] font-semibold leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">
               Every moment
               <br />
               <span className="text-accent">has a story.</span>
@@ -40,35 +42,39 @@ export default function LandingPage() {
 
             <p className="mt-6 max-w-xl text-base text-text-muted sm:text-lg">
               Angaza AI turns synthetic football events into explainable match
-              intelligence. Not just what happened — the <span className="text-text">why</span>.
-            </p>
-
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/signup"><Button size="lg">Start exploring</Button></Link>
-              <Link href="/login"><Button size="lg" variant="secondary">Sign in</Button></Link>
-            </div>
-
-            <p className="mt-6 max-w-lg text-xs text-text-faint">
-              Demo runs on synthetic match data. No real matches or copyrighted content are used.
+              intelligence — not just what happened, but{" "}
+              <span className="text-text">why</span>.
             </p>
           </div>
 
-          <div className="lg:col-span-5 lg:justify-self-end">
-            <HeroInsightCard />
+          <div className="mt-auto grid gap-8 pb-12 pt-12 lg:grid-cols-12 lg:items-end lg:gap-10 lg:pb-16">
+            <div className="lg:col-span-6">
+              <div className="flex flex-wrap items-center gap-3">
+                <Link href="/signup"><Button size="lg">Start exploring</Button></Link>
+                <Link href="/login"><Button size="lg" variant="secondary">Sign in</Button></Link>
+              </div>
+              <p className="mt-5 max-w-md text-xs text-text-faint">
+                Demo runs on synthetic match data. No real matches or copyrighted content are used.
+              </p>
+            </div>
+
+            <div className="lg:col-span-6 lg:justify-self-end">
+              <HeroInsightCard />
+            </div>
           </div>
         </div>
 
-        {/* Bottom fade into the next section */}
+        {/* Fade the bottom edge into the next section — one thin band. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-16"
           style={{
             backgroundImage: "linear-gradient(180deg, rgba(10,12,14,0) 0%, rgba(10,12,14,1) 100%)",
           }}
         />
       </section>
 
-      {/* ---------------- FEATURES ---------------- */}
+      {/* ─────────────── FEATURES ─────────────── */}
       <section id="features" className="border-b border-border">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
           <SectionHeading
@@ -82,14 +88,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ---------------- PIPELINE ---------------- */}
-      <section id="pipeline" className="relative border-b border-border">
+      {/* ─────────────── PIPELINE ─────────────── */}
+      <section id="pipeline" className="relative">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.35]"
+          className="pointer-events-none absolute inset-0 opacity-[0.30]"
           style={{
             backgroundImage:
-              "radial-gradient(900px 300px at 90% 0%, rgba(240,169,58,0.10), transparent 60%)",
+              "radial-gradient(900px 300px at 90% 0%, rgba(245,179,63,0.10), transparent 60%)",
           }}
         />
         <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
@@ -104,55 +110,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ---------------- ABOUT ---------------- */}
-      <section id="about" className="border-b border-border">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-3 lg:px-8">
-          <div className="lg:col-span-1">
-            <SectionHeading
-              kicker="Why Angaza"
-              title="The system explains why it mattered."
-              body=""
-            />
-          </div>
-          <div className="grid gap-4 lg:col-span-2 sm:grid-cols-2">
-            {[
-              ["Deterministic core", "Possession, progression, pressure, and momentum computed in pure Python. No LLM arithmetic."],
-              ["Grounded agents", "Agents reason over a frozen FactBundle. Verification rejects unknown IDs or unverified numbers."],
-              ["Personalization that respects facts", "Tone and depth adapt per viewer. Numbers never move."],
-              ["Real transparency", "The /agents page reads execution rows from the backend. Nothing is faked."],
-            ].map(([title, body]) => (
-              <div key={title} className="rounded-lg border border-border bg-bg-surface p-5">
-                <div className="text-sm font-medium">{title}</div>
-                <p className="mt-2 text-sm text-text-muted">{body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <Footer />
     </div>
   );
 }
 
-/* -------------------------------------------------------------------------- */
+/* ─────────────────────────────────────────────────────────────── */
 
 function Header() {
   return (
     <header className="absolute inset-x-0 top-0 z-30">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Logo />
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Marketing">
-          {NAV.map((n) => (
-            <a
-              key={n.href}
-              href={n.href}
-              className="rounded-md px-3 py-2 text-sm text-text-muted hover:text-text focus-ring"
-            >
-              {n.label}
-            </a>
-          ))}
-        </nav>
         <div className="flex items-center gap-2">
           <Link href="/login" className="hidden sm:block">
             <Button variant="ghost" size="sm">Sign in</Button>
