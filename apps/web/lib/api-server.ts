@@ -1,25 +1,23 @@
+import "server-only";
+
 import { cookies } from "next/headers";
 
-import { API_BASE_URL, ApiError } from "./api";
+import { ApiError } from "./api-error";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
 /**
- * Server-component fetch helper.
+ * Server-side API client.
  *
- * Next.js server components do not automatically forward the incoming request's
- * cookies to outbound fetches. We forward them explicitly so authenticated
- * routes on the backend see the same session that the browser sent us.
- *
- * Do NOT use this in client components — the browser's fetch already carries
- * credentials via `credentials: "include"`.
+ * The Next.js server has no browser cookie jar, so we read the incoming
+ * request's cookies and forward them on the outgoing fetch. Without this,
+ * server components always talk to the API anonymously, which is why
+ * layouts that need the current user were getting 401s.
  */
-export async function serverFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const jar = await cookies();
-  const cookieHeader = jar
-    .getAll()
-    .map((c) => `${c.name}=${c.value}`)
-    .join("; ");
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const cookieHeader = (await cookies()).toString();
 
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const res = await fetch(`${API_BASE}${path}`, {
     ...init,
     headers: {
       "content-type": "application/json",
@@ -30,34 +28,32 @@ export async function serverFetch<T>(path: string, init: RequestInit = {}): Prom
   });
 
   const text = await res.text();
-  const parsed: unknown = text ? safeJson(text) : undefined;
-
+  const body = text ? safeJson(text) : undefined;
   if (!res.ok) {
-    throw new ApiError(res.status, extractMessage(parsed, res.status), parsed);
+    const detail =
+      body && typeof body === "object" && "detail" in (body as Record<string, unknown>)
+        ? String((body as Record<string, unknown>).detail)
+        : `Request failed (${res.status})`;
+    throw new ApiError(res.status, detail, body);
   }
+  return body as T;
+}
 
-  return parsed as T;
+function safeJson(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
 }
 
 export const serverApi = {
-  get: <T,>(path: string) => serverFetch<T>(path),
+  get: <T,>(path: string) => request<T>(path),
   post: <T,>(path: string, body?: unknown) =>
-    serverFetch<T>(path, {
+    request<T>(path, {
       method: "POST",
       body: body !== undefined ? JSON.stringify(body) : undefined,
     }),
   patch: <T,>(path: string, body: unknown) =>
-    serverFetch<T>(path, { method: "PATCH", body: JSON.stringify(body) }),
+    request<T>(path, { method: "PATCH", body: JSON.stringify(body) }),
 };
-
-function safeJson(text: string): unknown {
-  try { return JSON.parse(text); } catch { return text; }
-}
-
-function extractMessage(body: unknown, status: number): string {
-  if (body && typeof body === "object" && !Array.isArray(body)) {
-    const detail = (body as Record<string, unknown>).detail;
-    if (typeof detail === "string" && detail.length > 0) return detail;
-  }
-  return `Request failed (${status})`;
-}

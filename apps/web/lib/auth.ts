@@ -1,7 +1,11 @@
 import { api } from "./api";
 import type { User } from "@/types/api";
 
-export async function signup(email: string, password: string, display_name = ""): Promise<User> {
+export async function signup(
+  email: string,
+  password: string,
+  display_name = "",
+): Promise<User> {
   return api.post<User>("/auth/signup", { email, password, display_name });
 }
 

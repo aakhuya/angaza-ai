@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
-import { patchPreferences } from "./client";
+import { patchPreferences } from "./api";
 import type { Preferences } from "@/types/api";
 
 const MODES: Array<{ id: Preferences["viewer_mode"]; label: string; blurb: string }> = [

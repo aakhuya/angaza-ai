@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { patchProfile } from "./client";
+import { patchProfile } from "./api";
 import type { Profile } from "@/types/api";
 
 export function ProfileForm({ initial }: { initial: Profile }) {

@@ -33,20 +33,23 @@ log = get_logger("angaza.auth")
 
 def _set_auth_cookies(response: Response, access: str, refresh: str) -> None:
     settings = get_settings()
-    common = dict(httponly=True, samesite="lax", secure=not settings.is_dev, path="/")
+    # Frontend (localhost:3000) and API (localhost:8000) are different
+    # origins in dev, so SameSite=Lax would silently drop the cookie on
+    # subsequent requests. Browsers treat http://localhost as a secure
+    # context, so SameSite=None + secure=False is the correct dev setup.
+    # In production both are SameSite=None + secure=True.
+    common = dict(httponly=True, samesite="none", secure=not settings.is_dev, path="/")
     response.set_cookie(
         ACCESS_COOKIE, access, max_age=settings.jwt_access_ttl_minutes * 60, **common
     )
     response.set_cookie(
         REFRESH_COOKIE, refresh, max_age=settings.jwt_refresh_ttl_days * 86400, **common
     )
-
-
 def _clear_auth_cookies(response: Response) -> None:
-    response.delete_cookie(ACCESS_COOKIE, path="/")
-    response.delete_cookie(REFRESH_COOKIE, path="/")
-
-
+    settings = get_settings()
+    common = dict(path="/", samesite="none", secure=not settings.is_dev)
+    response.delete_cookie(ACCESS_COOKIE, **common)
+    response.delete_cookie(REFRESH_COOKIE, **common)
 def _issue_refresh(db: Session, user: User) -> str:
     settings = get_settings()
     raw, hashed = new_refresh_token()
