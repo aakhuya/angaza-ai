@@ -1,14 +1,14 @@
 import Link from "next/link";
 
 /**
- * Static preview of the live insight surface. Hand-authored copy, labelled
- * with the timestamp and confidence so it reads as a product preview rather
- * than a claim of live data.
+ * Static preview of the live insight surface.
+ * Hand-authored copy, labelled with a timestamp and confidence so it reads as
+ * a product preview rather than a claim of live data.
  */
 export function HeroInsightCard() {
   return (
-    <div className="w-full max-w-md rounded-xl border border-border bg-bg-surface/92 shadow-pop backdrop-blur-sm">
-      <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+    <div className="w-full max-w-md rounded-xl border border-border bg-bg-surface/95 shadow-pop backdrop-blur-sm sm:max-w-lg">
+      <div className="flex items-center justify-between border-b border-border px-4 py-2.5 sm:px-5">
         <div className="flex items-center gap-2">
           <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-success" aria-hidden />
           <span className="font-mono text-2xs uppercase tracking-wider text-text-muted">
@@ -18,7 +18,7 @@ export function HeroInsightCard() {
         <span className="font-mono text-2xs text-text-faint">72:14</span>
       </div>
 
-      <div className="space-y-3 px-4 py-4">
+      <div className="space-y-3 px-4 py-4 sm:px-5 sm:py-5">
         <div className="flex items-center gap-2">
           <span className="rounded border border-accent-soft bg-accent/10 px-1.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-accent">
             Tactical shift
@@ -26,10 +26,10 @@ export function HeroInsightCard() {
           <span className="font-mono text-2xs text-text-faint">82%</span>
         </div>
 
-        <p className="text-sm font-medium leading-snug">
+        <p className="text-sm font-medium leading-snug sm:text-base">
           Angaza detected a sustained increase in pressure.
         </p>
-        <p className="text-xs leading-relaxed text-text-muted">
+        <p className="text-xs leading-relaxed text-text-muted sm:text-sm">
           Team A increased final-third entries while forcing three possession
           changes in the last four minutes.
         </p>
