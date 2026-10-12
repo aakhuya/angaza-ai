@@ -1,12 +1,11 @@
 "use client";
 
-import { API_BASE_URL } from "@/lib/api";
 
 // Real OAuth start routes on the backend. When credentials are not configured
 // the backend returns a clear 503 rather than faking a login.
 async function start(provider: "google" | "apple") {
   try {
-    const res = await fetch(`${API_BASE_URL}/auth/oauth/${provider}/start`, {
+    const res = await fetch(`/api/auth/oauth/${provider}/start`, {
       credentials: "include",
     });
     if (!res.ok) {

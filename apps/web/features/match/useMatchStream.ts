@@ -27,8 +27,7 @@ export function useMatchStream(
   const start = useCallback(async () => {
     const url = `/matches/${encodeURIComponent(matchId)}/start` +
       `?seed=${opts.seed}&scenario=${opts.scenario}&viewer_mode=${opts.viewerMode}&speed=600`;
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
-    const res = await fetch(`${base}${url}`, { method: "POST", credentials: "include" });
+    const res = await fetch(`/api${url}`, { method: "POST", credentials: "include" });
     if (!res.ok && res.status !== 409) {
       // 409 means already running — treat as success.
       throw new Error(`Failed to start match (${res.status})`);

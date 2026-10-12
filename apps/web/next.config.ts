@@ -1,9 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true,
-  // Landing page fetches API at runtime; don't fail the build if API is down.
-  experimental: {},
+  async rewrites() {
+    const target = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+    console.log("[next.config] proxying /api/* →", target);
+    return [
+      { source: "/api/:path*", destination: `${target}/:path*` },
+    ];
+  },
 };
 
 export default nextConfig;

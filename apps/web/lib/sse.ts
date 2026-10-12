@@ -1,9 +1,12 @@
-import { API_BASE_URL } from "./api";
+// EventSource opens a browser connection, so it must go through the
+// same origin. next.config.ts proxies /api/* to the backend.
+const SSE_BASE = "/api";
+
 
 export type SseHandler = (event: { type: string; data: unknown }) => void;
 
 export function openMatchStream(matchId: string, onEvent: SseHandler): () => void {
-  const url = `${API_BASE_URL}/matches/${encodeURIComponent(matchId)}/stream`;
+  const url = `${SSE_BASE}/matches/${encodeURIComponent(matchId)}/stream`;
   const source = new EventSource(url, { withCredentials: true });
 
   const listen = (type: string) => (ev: MessageEvent) => {

@@ -35,18 +35,18 @@ log = get_logger("angaza.auth")
 
 def _set_auth_cookies(response: Response, access: str, refresh: str) -> None:
     settings = get_settings()
-    # Frontend (localhost:3000) and API (localhost:8000) are different
-    # origins in dev, so SameSite=Lax would silently drop the cookie on
-    # subsequent requests. Browsers treat http://localhost as a secure
-    # context, so SameSite=None + secure=False is the correct dev setup.
-    # In production both are SameSite=None + secure=True.
-    common = dict(httponly=True, samesite="none", secure=not settings.is_dev, path="/")
+    # TEMPORARY DEBUG: force insecure Lax cookies in dev so we can prove
+    # the 401 is a cookie-transport problem. Revert after diagnosis.
+    log.info("set_auth_cookies", app_env=settings.app_env, is_dev=settings.is_dev)
+    common = dict(httponly=True, samesite="lax", secure=False, path="/")
     response.set_cookie(
         ACCESS_COOKIE, access, max_age=settings.jwt_access_ttl_minutes * 60, **common
     )
     response.set_cookie(
         REFRESH_COOKIE, refresh, max_age=settings.jwt_refresh_ttl_days * 86400, **common
     )
+
+
 def _clear_auth_cookies(response: Response) -> None:
     settings = get_settings()
     common = dict(path="/", samesite="none", secure=not settings.is_dev)

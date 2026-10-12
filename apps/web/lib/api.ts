@@ -1,4 +1,6 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+// Same-origin by design. Next.js rewrites /api/* to the FastAPI backend
+// (see next.config.ts), so cookies stay first-party and CORS never fires.
+const API_BASE = "/api";
 
 export class ApiError extends Error {
   constructor(public status: number, message: string, public body?: unknown) {
