@@ -18,9 +18,9 @@ from app.core.security import (
 from app.models.session import get_db
 from app.models.user import Preferences, Profile, RefreshToken, User
 from app.schemas.auth import (
+    LoginRequest,
     OnboardingPatch,
     OnboardingResponse,
-    LoginRequest,
     PreferencesPatch,
     PreferencesResponse,
     ProfilePatch,

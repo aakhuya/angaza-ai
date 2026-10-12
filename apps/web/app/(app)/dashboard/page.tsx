@@ -9,6 +9,7 @@ import { getPreferences, getProfile } from "@/features/settings/server";
 import { getExecutions } from "@/features/agents/client";
 import { serverApi } from "@/lib/api-server";
 import type { AgentExecution, MatchState } from "@/types/api";
+import { requireOnboarded } from "@/lib/firstRun";
 
 async function fetchState(): Promise<MatchState | null> {
   try {
