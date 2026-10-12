@@ -18,6 +18,8 @@ from app.core.security import (
 from app.models.session import get_db
 from app.models.user import Preferences, Profile, RefreshToken, User
 from app.schemas.auth import (
+    OnboardingPatch,
+    OnboardingResponse,
     LoginRequest,
     PreferencesPatch,
     PreferencesResponse,
@@ -244,4 +246,49 @@ def patch_preferences(
         viewer_mode=prefs.viewer_mode,
         language=prefs.language,
         explanation_detail=prefs.explanation_detail,
+    )
+
+
+# ---- onboarding ------------------------------------------------------------
+
+
+@router.get("/onboarding", response_model=OnboardingResponse)
+def get_onboarding(user: User = Depends(get_current_user)) -> OnboardingResponse:
+    prefs = user.preferences or Preferences(user_id=user.id)
+    blob = (prefs.preferences_json or {}) if hasattr(prefs, "preferences_json") else {}
+    return OnboardingResponse(
+        completed=getattr(prefs, "onboarding_completed", False),
+        favorite_teams=list(blob.get("favorite_teams", [])),
+        favorite_players=list(blob.get("favorite_players", [])),
+        viewer_mode=prefs.viewer_mode,
+    )
+
+
+@router.post("/onboarding", response_model=OnboardingResponse)
+def complete_onboarding(
+    payload: OnboardingPatch,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> OnboardingResponse:
+    prefs = user.preferences
+    if prefs is None:
+        prefs = Preferences(user_id=user.id)
+        db.add(prefs)
+
+    prefs.viewer_mode = payload.viewer_mode
+    prefs.language = payload.language
+    prefs.explanation_detail = payload.explanation_detail
+    prefs.onboarding_completed = True
+    prefs.preferences_json = {
+        "favorite_teams": payload.favorite_teams,
+        "favorite_players": payload.favorite_players,
+    }
+    db.commit()
+    db.refresh(prefs)
+
+    return OnboardingResponse(
+        completed=True,
+        favorite_teams=payload.favorite_teams,
+        favorite_players=payload.favorite_players,
+        viewer_mode=prefs.viewer_mode,
     )

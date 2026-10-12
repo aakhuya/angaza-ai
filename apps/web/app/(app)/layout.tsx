@@ -9,6 +9,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const user = await getMe();
   if (!user) redirect("/login");
 
+  // First-run gate. The onboarding route is the only exception; once it
+  // completes, /onboarding itself redirects to /dashboard.
+
   return (
     <div className="flex min-h-screen bg-bg">
       <a

@@ -40,3 +40,20 @@ class PreferencesResponse(BaseModel):
     viewer_mode: str
     language: str
     explanation_detail: str
+
+
+class OnboardingPatch(BaseModel):
+    """Payload sent once, at the end of first-run setup."""
+
+    favorite_teams: list[str] = Field(default_factory=list, max_length=6)
+    favorite_players: list[str] = Field(default_factory=list, max_length=6)
+    viewer_mode: str = Field(pattern="^(casual|analyst|player_focus)$")
+    language: str = Field(default="en", max_length=8)
+    explanation_detail: str = Field(default="standard", pattern="^(brief|standard|deep)$")
+
+
+class OnboardingResponse(BaseModel):
+    completed: bool
+    favorite_teams: list[str]
+    favorite_players: list[str]
+    viewer_mode: str

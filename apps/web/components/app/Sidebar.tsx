@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -84,8 +85,15 @@ export function Sidebar({ user }: { user: User }) {
 
       <div className="border-t border-border p-3">
         <div className="flex items-center gap-3 rounded-md border border-border bg-bg p-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-bg-elevated font-mono text-xs text-accent">
-            {(user.display_name || user.email).slice(0, 1).toUpperCase()}
+          {/* Generated avatar lives at public/media/avatar-default.jpg. */}
+          <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-bg-elevated">
+            <Image
+              src="/media/avatar-default.jpg"
+              alt=""
+              fill
+              sizes="36px"
+              className="object-cover"
+            />
           </span>
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-medium">

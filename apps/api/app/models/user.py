@@ -1,7 +1,8 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String
+import sqlalchemy as sa
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin
@@ -49,6 +50,14 @@ class Preferences(Base, TimestampMixin):
     viewer_mode: Mapped[str] = mapped_column(String(20), default="analyst")
     language: Mapped[str] = mapped_column(String(8), default="en")
     explanation_detail: Mapped[str] = mapped_column(String(16), default="standard")
+    onboarding_completed: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default=sa.text("0")
+    )
+    # Flexible bucket for favorite teams / players lists so we don't need a
+    # relational join for a handful of user preferences.
+    preferences_json: Mapped[dict] = mapped_column(
+        JSON, default=dict, server_default=sa.text("'{}'")
+    )
 
     user: Mapped[User] = relationship(back_populates="preferences")
 

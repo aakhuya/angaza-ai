@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { Pitch } from "@/components/match/Pitch";
@@ -21,6 +22,8 @@ async function fetchState(): Promise<MatchState | null> {
 }
 
 export default async function DashboardPage() {
+  await requireOnboarded();
+
   const [profile, preferences, state, agents] = await Promise.all([
     getProfile().catch(() => ({ display_name: "", favorite_team: "", favorite_player: "" })),
     getPreferences().catch(() => ({ viewer_mode: "analyst" as const, language: "en", explanation_detail: "standard" as const })),
@@ -47,14 +50,36 @@ export default async function DashboardPage() {
 function HeroBanner({ greeting }: { greeting: string }) {
   return (
     <section className="relative isolate overflow-hidden rounded-xl border border-border">
+      {/*
+        Generated hero. Tuned object-position keeps the player's silhouette
+        on the right at wide viewports and the middle at narrow viewports,
+        so the headline text never overlaps the subject.
+      */}
+      <Image
+        src="/media/dashboard-hero.jpg"
+        alt=""
+        fill
+        priority
+        sizes="(max-width: 1024px) 100vw, 1100px"
+        className="object-cover object-[78%_center] lg:object-[85%_center]"
+      />
+      {/* Left-to-right scrim so the headline block stays legible. */}
       <div
         aria-hidden
         className="absolute inset-0"
         style={{
           backgroundImage:
-            "radial-gradient(900px 400px at 85% 20%, rgba(245,179,63,0.18), transparent 60%), radial-gradient(700px 300px at 5% 100%, rgba(79,189,176,0.12), transparent 60%), linear-gradient(180deg, #0C1013 0%, #090B0D 100%)",
+            "linear-gradient(90deg, rgba(8,10,12,0.94) 0%, rgba(8,10,12,0.75) 38%, rgba(8,10,12,0.40) 68%, rgba(8,10,12,0.72) 100%)",
         }}
       />
+      <div        aria-hidden
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            "linear-gradient(180deg, rgba(8,10,12,0.55) 0%, rgba(8,10,12,0) 30%, rgba(8,10,12,0.55) 100%)",
+        }}
+      />
+
       <div className="relative grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_240px] lg:gap-8 lg:p-8">
         <div>
           <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">
@@ -73,7 +98,6 @@ function HeroBanner({ greeting }: { greeting: string }) {
 
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/matches"><Button>Explore matches →</Button></Link>
-            <Button variant="secondary">Watch demo</Button>
           </div>
         </div>
 
@@ -332,15 +356,60 @@ function SimpleStat({ label, home, away }: { label: string; home: number; away: 
 
 function ActionGrid() {
   const items = [
-    { title: "Match analysis", body: "Deep dive into tactics, patterns and key moments.", cta: "Explore analysis", href: "/analysis" },
-    { title: "Player profiles", body: "Detailed stats, heatmaps and performance trends.", cta: "View players", href: "/players" },
-    { title: "Match recaps", body: "AI-generated stories from every match.", cta: "Read recaps", href: "/recaps" },
-    { title: "Your personalization", body: "Customise your experience and get insights that matter to you.", cta: "Manage preferences", href: "/settings/preferences" },
+    {
+      title: "Match analysis",
+      body: "Deep dive into tactics, patterns and key moments.",
+      cta: "Explore analysis",
+      href: "/analysis",
+      image: "/media/thumb-analysis.jpg",
+    },
+    {
+      title: "Player profiles",
+      body: "Detailed stats, heatmaps and performance trends.",
+      cta: "View players",
+      href: "/players",
+      image: "/media/thumb-player.jpg",
+    },
+    {
+      title: "Match recaps",
+      body: "AI-generated stories from every match.",
+      cta: "Read recaps",
+      href: "/recaps",
+      image: "/media/thumb-recap.jpg",
+    },
+    {
+      title: "Your personalization",
+      body: "Customise your experience and get insights that matter to you.",
+      cta: "Manage preferences",
+      href: "/settings/preferences",
+      image: null,
+    },
   ];
+
   return (
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {items.map((i) => (
-        <Card key={i.title} className="flex flex-col">
+        <Card key={i.title} className="flex flex-col overflow-hidden">
+          <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-border bg-bg-elevated">
+            {i.image ? (
+              <Image
+                src={i.image}
+                alt=""
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                className="object-cover"
+              />
+            ) : (
+              <div
+                aria-hidden
+                className="absolute inset-0"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(500px 200px at 20% 20%, rgba(245,179,63,0.22), transparent 60%), radial-gradient(400px 200px at 90% 90%, rgba(79,189,176,0.14), transparent 60%)",
+                }}
+              />
+            )}
+          </div>
           <CardBody className="flex flex-1 flex-col">
             <div className="text-sm font-medium">{i.title}</div>
             <p className="mt-1.5 text-xs text-text-muted">{i.body}</p>
