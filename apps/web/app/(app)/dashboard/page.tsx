@@ -59,7 +59,7 @@ export default async function DashboardPage() {
 function HeroBanner({ greeting }: { greeting: string }) {
   return (
     <section className="relative isolate overflow-hidden rounded-xl border border-border">
-      <div className="relative h-[320px] sm:h-[360px] lg:h-[400px]">
+      <div className="relative min-h-[360px] sm:min-h-[400px] lg:min-h-[440px]">
         <Image
           src="/media/dashboard-hero.jpg"
           alt=""
@@ -85,17 +85,17 @@ function HeroBanner({ greeting }: { greeting: string }) {
           }}
         />
 
-        <div className="relative flex h-full items-end px-6 pb-6 sm:px-8 sm:pb-8 lg:px-10 lg:pb-10">
-          <div className="max-w-xl">
-            <p className="font-mono text-[0.6rem] uppercase tracking-[0.22em] text-accent">
-              Welcome back, {greeting.split(" ")[0].toUpperCase()}
-            </p>
-            <h1 className="mt-3 text-[2rem] font-semibold leading-[1.02] tracking-tight sm:text-[2.5rem] lg:text-[2.75rem]">
+        <div className="relative flex h-full flex-col px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
+          <p className="font-mono text-[0.6rem] uppercase tracking-[0.22em] text-accent">
+            Welcome back, {greeting.split(" ")[0].toUpperCase()}
+          </p>
+          <div className="mt-auto max-w-xl pb-1">
+            <h1 className="text-[1.75rem] font-semibold leading-[1.05] tracking-tight sm:text-[2.25rem] lg:text-[2.5rem]">
               Football intelligence
               <br />
               <span className="text-accent">for a deeper game.</span>
             </h1>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-text-muted">
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-text-muted">
               Live matches. Smart insights. Real stories.
             </p>
             <div className="mt-6 flex flex-wrap gap-2.5">

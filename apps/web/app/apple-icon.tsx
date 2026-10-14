@@ -23,9 +23,11 @@ export default function AppleIcon() {
               <stop offset="100%" stopColor="#A67C2B" />
             </linearGradient>
           </defs>
-          <rect x="2" y="2" width="28" height="28" rx="7" fill="none" stroke="url(#g)" strokeWidth="2.4" />
-          <path d="M10 26 L16 6 M22 26 L16 6" stroke="url(#g)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
-          <circle cx="16" cy="17" r="3.2" fill="none" stroke="url(#g)" strokeWidth="2" />
+          <circle cx="16" cy="16" r="14" fill="#0A0F16" />
+          <circle cx="16" cy="16" r="14" fill="none" stroke="url(#g)" strokeWidth="2" />
+          <polygon points="16,10.5 21,14 19.2,20 12.8,20 11,14" fill="none" stroke="url(#g)" strokeWidth="1.4" strokeLinejoin="round" />
+          <path d="M16 9.5 L21 22 L18.6 22 L16 15.2 L13.4 22 L11 22 Z" fill="url(#g)" />
+          <rect x="13.6" y="17.4" width="4.8" height="1.4" fill="url(#g)" />
         </svg>
       </div>
     ),
