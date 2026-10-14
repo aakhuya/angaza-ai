@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { HeroBackdrop } from "@/components/marketing/HeroBackdrop";
 import { HeroInsightCard } from "@/components/marketing/HeroInsightCard";
+import { RotatingBall } from "@/components/marketing/RotatingBall";
 import { FeatureStrip } from "@/components/marketing/FeatureStrip";
 import { Logo } from "@/components/marketing/Logo";
 import { Button } from "@/components/ui/Button";
@@ -53,6 +54,28 @@ export default function LandingPage() {
             backgroundImage: "linear-gradient(180deg, rgba(10,12,14,0) 0%, rgba(10,12,14,1) 100%)",
           }}
         />
+      </section>
+
+      {/* ─────────────────────── BALL BAND ─────────────────────── */}
+      <section className="border-b border-border">
+        <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-14 sm:grid-cols-[minmax(0,1fr)_auto] sm:px-6 lg:px-8">
+          <div className="max-w-xl">
+            <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">
+              More than numbers
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+              The story behind the scoreline
+            </h2>
+            <p className="mt-3 text-sm text-text-muted">
+              Every match is a system of small decisions. Angaza reads the
+              pressure, the territory, the moments that flip the game — and
+              explains why they mattered, grounded in the data.
+            </p>
+          </div>
+          <div className="flex justify-center sm:justify-end">
+            <RotatingBall size={140} />
+          </div>
+        </div>
       </section>
 
       {/* ─────────────────────── CAPABILITIES ─────────────────────── */}

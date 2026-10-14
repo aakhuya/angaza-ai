@@ -43,7 +43,7 @@ export default async function DashboardPage() {
       <LiveBand state={state} />
 
       {/* ── INSIGHT + AGENTS (two columns) ───────────────────────── */}
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
         <LatestInsight />
         <AgentActivity executions={agents.executions} />
       </div>
@@ -347,7 +347,7 @@ function SupportGrid({ viewerMode }: { viewerMode: string }) {
           Explore
         </span>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {items.map((i) => (
           <Card key={i.title} className="flex flex-col overflow-hidden">
             <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-border bg-bg-elevated">

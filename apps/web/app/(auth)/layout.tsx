@@ -8,49 +8,56 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   const heroImage = findHeroImage();
 
   return (
-    <div className="min-h-[100svh] bg-bg lg:grid lg:grid-cols-2">
-      {/* ── Image panel ─────────────────────────────────────────────── */}
-      <aside className="relative isolate flex h-[26svh] min-h-[190px] flex-col overflow-hidden border-b border-border sm:h-[30svh] lg:h-auto lg:min-h-0 lg:border-b-0 lg:border-r">
+    <div className="flex min-h-screen flex-col bg-bg">
+      {/* ── Top: image panel, faded into the page below ─────────────── */}
+      <header className="relative isolate h-[36svh] min-h-[220px] overflow-hidden sm:h-[42svh] lg:h-[46svh]">
         {heroImage ? (
           <Image
             src={heroImage.src}
             alt=""
             fill
             priority
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            className="object-cover object-[62%_35%] sm:object-[70%_35%] lg:object-[60%_center]"
+            sizes="100vw"
+            className="object-cover object-[62%_35%] sm:object-[70%_center] lg:object-center"
           />
         ) : (
           <div
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(900px 400px at 78% 20%, rgba(245,179,63,0.20), transparent 55%)," +
-                "radial-gradient(700px 340px at 15% 100%, rgba(79,189,176,0.12), transparent 60%)," +
-                "linear-gradient(180deg, #0C1013 0%, #090B0D 100%)",
+                "radial-gradient(900px 400px at 78% 20%, rgba(232,188,103,0.20), transparent 55%)," +
+                "radial-gradient(700px 340px at 15% 100%, rgba(57,214,176,0.12), transparent 60%)," +
+                "linear-gradient(180deg, #0E141C 0%, #080B10 100%)",
             }}
           />
         )}
 
-        {/* Scrims: keep text legible without flattening the photo. */}
+        {/* Left scrim for headline legibility */}
         <div
           aria-hidden
           className="absolute inset-0"
           style={{
             backgroundImage:
-              "linear-gradient(90deg, rgba(8,10,12,0.88) 0%, rgba(8,10,12,0.52) 45%, rgba(8,10,12,0.22) 75%, rgba(8,10,12,0.70) 100%)",
+              "linear-gradient(90deg, rgba(8,11,16,0.92) 0%, rgba(8,11,16,0.62) 45%, rgba(8,11,16,0.28) 75%, rgba(8,11,16,0.72) 100%)",
+          }}
+        />
+        {/* Top fade for the header, and the crucial bottom fade into the page. */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-24"
+          style={{
+            backgroundImage: "linear-gradient(180deg, rgba(8,11,16,0.7) 0%, rgba(8,11,16,0) 100%)",
           }}
         />
         <div
           aria-hidden
-          className="absolute inset-0"
+          className="absolute inset-x-0 bottom-0 h-40"
           style={{
-            backgroundImage:
-              "linear-gradient(180deg, rgba(8,10,12,0.55) 0%, rgba(8,10,12,0) 45%, rgba(8,10,12,0.90) 100%)",
+            backgroundImage: "linear-gradient(180deg, rgba(8,11,16,0) 0%, rgba(8,11,16,1) 90%)",
           }}
         />
 
-        <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col px-4 py-4 sm:px-6 lg:px-10 lg:py-8">
+        <div className="relative mx-auto flex h-full max-w-7xl flex-col px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <Logo />
             <Link
@@ -61,27 +68,20 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </Link>
           </div>
 
-          {/* Headline only appears on desktop where there's vertical room. */}
-          <div className="mt-auto hidden max-w-lg pb-2 lg:block">
-            <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">Angaza AI</p>
-            <h1 className="mt-3 text-3xl font-semibold leading-[1.06] tracking-tight xl:text-4xl">
-              Smarter insights.
-              <br />
-              <span className="text-accent">Deeper stories.</span>
-            </h1>
-            <p className="mt-4 max-w-md text-sm text-text-muted">
-              Explainable match intelligence — deterministic analytics do the math,
-              agents explain why the moment mattered.
+          <div className="mt-auto max-w-2xl pb-6 sm:pb-8">
+            <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">
+              Angaza AI
             </p>
+            <h1 className="mt-2 text-2xl font-semibold leading-[1.05] tracking-tight sm:text-3xl lg:text-4xl">
+              Smarter insights.
+              <br className="hidden sm:block" />
+              <span className="text-accent"> Deeper stories.</span>
+            </h1>
           </div>
         </div>
-      </aside>
+      </header>
 
-      {/* ── Form panel ──────────────────────────────────────────────── */}
-      <main
-        id="main"
-        className="flex flex-1 items-start justify-center overflow-y-auto px-4 py-6 sm:px-6 sm:py-8 lg:items-center lg:px-10 lg:py-10"
-      >
+      <main id="main" className="relative flex flex-1 items-start justify-center px-4 pb-12 pt-4 sm:px-6 sm:pt-6 lg:px-8">
         <div className="w-full max-w-md animate-fade-in">{children}</div>
       </main>
     </div>

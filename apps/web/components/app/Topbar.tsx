@@ -1,8 +1,10 @@
 "use client";
 
-import { Bell, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+
+import { Notifications } from "./Notifications";
 
 export function Topbar() {
   const router = useRouter();
@@ -38,13 +40,7 @@ export function Topbar() {
           <span className="h-1.5 w-1.5 rounded-full bg-teal" aria-hidden />
           Simulation
         </span>
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="rounded-md p-2 text-text-muted hover:text-text focus-ring"
-        >
-          <Bell size={16} strokeWidth={1.75} />
-        </button>
+        <Notifications />
       </div>
     </header>
   );
