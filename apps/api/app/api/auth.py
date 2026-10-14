@@ -1,7 +1,7 @@
-from datetime import UTC, datetime, timedelta
-
 import os
 import secrets
+from contextlib import suppress
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, HTTPException, Request, Response, UploadFile, status
@@ -341,10 +341,8 @@ async def upload_avatar(
     # Delete the previous avatar file if it was one of ours.
     if p.avatar_url and p.avatar_url.startswith("/uploads/"):
         old = UPLOAD_DIR / p.avatar_url.rsplit("/", 1)[-1]
-        try:
+        with suppress(OSError):
             old.unlink(missing_ok=True)
-        except OSError:
-            pass
 
     p.avatar_url = f"/uploads/{name}"
     db.commit()

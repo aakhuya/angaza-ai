@@ -33,7 +33,7 @@ export function Sidebar({ user, avatarUrl = "" }: { user: { display_name?: strin
         href="/dashboard"
         className="flex items-center gap-2.5 border-b border-border px-5 py-4 focus-ring rounded-none"
       >
-        <Logo compact />
+        <Logo compact asLink={false} />
       </Link>
 
       <nav aria-label="Primary" className="flex-1 overflow-y-auto px-3 py-3">
