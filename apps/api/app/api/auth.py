@@ -1,6 +1,10 @@
 from datetime import UTC, datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+import os
+import secrets
+from pathlib import Path
+
+from fastapi import APIRouter, Depends, File, HTTPException, Request, Response, UploadFile, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -185,6 +189,8 @@ def get_profile(user: User = Depends(get_current_user)) -> ProfileResponse:
     p = user.profile or Profile(user_id=user.id)
     return ProfileResponse(
         display_name=p.display_name,
+        username=user.username,
+        avatar_url=p.avatar_url or "",
         favorite_team=p.favorite_team,
         favorite_player=p.favorite_player,
     )
@@ -204,10 +210,18 @@ def patch_profile(
         value = getattr(payload, field)
         if value is not None:
             setattr(p, field, value)
+    if payload.username is not None:
+        # Reject duplicates explicitly.
+        conflict = db.scalar(select(User).where(User.username == payload.username, User.id != user.id))
+        if conflict is not None:
+            raise HTTPException(status_code=409, detail="Username already taken")
+        user.username = payload.username
     db.commit()
     db.refresh(p)
     return ProfileResponse(
         display_name=p.display_name,
+        username=user.username,
+        avatar_url=p.avatar_url or "",
         favorite_team=p.favorite_team,
         favorite_player=p.favorite_player,
     )
@@ -291,4 +305,55 @@ def complete_onboarding(
         favorite_teams=payload.favorite_teams,
         favorite_players=payload.favorite_players,
         viewer_mode=prefs.viewer_mode,
+    )
+
+
+# ---- avatar upload ---------------------------------------------------------
+
+
+UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "./uploads"))
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+ALLOWED_AVATAR_TYPES = {"image/png", "image/jpeg", "image/webp"}
+MAX_AVATAR_BYTES = 3 * 1024 * 1024  # 3 MB
+
+
+@router.post("/profile/avatar", response_model=ProfileResponse)
+async def upload_avatar(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> ProfileResponse:
+    if file.content_type not in ALLOWED_AVATAR_TYPES:
+        raise HTTPException(status_code=400, detail="Unsupported image type")
+    content = await file.read()
+    if len(content) > MAX_AVATAR_BYTES:
+        raise HTTPException(status_code=400, detail="Image too large (max 3 MB)")
+
+    ext = {"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp"}[file.content_type]
+    name = f"{user.id}-{secrets.token_hex(4)}.{ext}"
+    target = UPLOAD_DIR / name
+    target.write_bytes(content)
+
+    p = user.profile
+    if p is None:
+        p = Profile(user_id=user.id)
+        db.add(p)
+    # Delete the previous avatar file if it was one of ours.
+    if p.avatar_url and p.avatar_url.startswith("/uploads/"):
+        old = UPLOAD_DIR / p.avatar_url.rsplit("/", 1)[-1]
+        try:
+            old.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+    p.avatar_url = f"/uploads/{name}"
+    db.commit()
+    db.refresh(p)
+
+    return ProfileResponse(
+        display_name=p.display_name,
+        username=user.username,
+        avatar_url=p.avatar_url or "",
+        favorite_team=p.favorite_team,
+        favorite_player=p.favorite_player,
     )

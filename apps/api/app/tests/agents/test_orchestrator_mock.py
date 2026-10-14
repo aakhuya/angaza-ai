@@ -1,5 +1,5 @@
 import asyncio
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 from app.agents.facts import build_fact_bundle
 from app.agents.orchestrator import run
@@ -8,7 +8,7 @@ from app.analytics.compute import compute_state, score_importance
 from app.schemas.events import PassEvent
 from app.services.agent_store import agent_store
 
-T0 = datetime(2025, 1, 1, tzinfo=UTC)
+T0 = datetime(2025, 1, 1, tzinfo=timezone.utc)
 
 
 def _bundle():
@@ -23,17 +23,27 @@ def _bundle():
     return build_fact_bundle(ev, state, imp)
 
 
-def test_orchestrator_runs_all_agents_and_records():
+def test_orchestrator_runs_and_records_tactical_first():
+    """The pipeline always records the tactical stage first.
+
+    It may stop there if verification rejects, or continue through all four
+    agents. The test asserts the honest invariant: tactical ran.
+    """
     agent_store.clear("m1-orch")
     bundle = _bundle()
     outcome = asyncio.run(run(provider=MockProvider(), bundle=bundle, viewer_mode="analyst"))
     records = agent_store.list("m1-orch")
-    agents = {r.agent for r in records}
-    assert "match_intelligence" in agents
+
+    assert records, "the pipeline must record at least the tactical stage"
+    assert records[0].agent == "tactical", "tactical must run first"
+
     if outcome is not None:
+        agents = {r.agent for r in records}
+        assert "match_intelligence" in agents
+        assert "narrative" in agents
+        assert "personalization" in agents
         assert outcome.category in {
             "key_moment", "chance", "progression", "defensive",
             "pressure", "milestone", "context",
         }
-        assert "narrative" in agents
-        assert "personalization" in agents
+        assert outcome.tactical_pattern is not None

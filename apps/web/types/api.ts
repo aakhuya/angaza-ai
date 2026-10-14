@@ -4,6 +4,8 @@ export type User = { id: string; email: string; display_name: string };
 
 export type Profile = {
   display_name: string;
+  username?: string | null;
+  avatar_url?: string;
   favorite_team: string;
   favorite_player: string;
 };

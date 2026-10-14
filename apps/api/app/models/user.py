@@ -17,6 +17,7 @@ class User(Base, TimestampMixin):
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    username: Mapped[str | None] = mapped_column(String(40), unique=True, nullable=True)
     password_hash: Mapped[str] = mapped_column(String(255))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
@@ -37,6 +38,7 @@ class Profile(Base, TimestampMixin):
     display_name: Mapped[str] = mapped_column(String(80), default="")
     favorite_team: Mapped[str] = mapped_column(String(80), default="")
     favorite_player: Mapped[str] = mapped_column(String(80), default="")
+    avatar_url: Mapped[str] = mapped_column(String(255), default="")
 
     user: Mapped[User] = relationship(back_populates="profile")
 

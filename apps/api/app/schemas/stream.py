@@ -28,6 +28,7 @@ class InsightEnvelope(BaseModel):
     viewer_mode: str
     supporting_event_ids: list[str] = Field(default_factory=list)
     confidence: float = 1.0
+    tactical_pattern: str | None = None
 
 
 class ImportanceEnvelope(BaseModel):

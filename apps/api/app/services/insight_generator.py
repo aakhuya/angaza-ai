@@ -39,4 +39,5 @@ async def generate(
         viewer_mode=viewer_mode,
         supporting_event_ids=[event.event_id],
         confidence=outcome.confidence,
+        tactical_pattern=outcome.tactical_pattern,
     )

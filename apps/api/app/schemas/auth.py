@@ -20,12 +20,15 @@ class UserResponse(BaseModel):
 
 class ProfilePatch(BaseModel):
     display_name: str | None = Field(default=None, max_length=80)
+    username: str | None = Field(default=None, max_length=40, pattern="^[a-zA-Z0-9_]{3,40}$")
     favorite_team: str | None = Field(default=None, max_length=80)
     favorite_player: str | None = Field(default=None, max_length=80)
 
 
 class ProfileResponse(BaseModel):
     display_name: str
+    username: str | None = None
+    avatar_url: str = ""
     favorite_team: str
     favorite_player: str
 
