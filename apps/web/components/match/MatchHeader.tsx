@@ -17,7 +17,7 @@ export function MatchHeader({
   second: number;
   status: string;
 }) {
-  const tone = status === "live" ? "accent" : status === "finished" ? "teal" : "neutral";
+  const tone = status === "live" ? "danger" : status === "finished" ? "teal" : "neutral";
 
   return (
     <div className="rounded-lg border border-border bg-bg-surface">
@@ -38,10 +38,14 @@ export function MatchHeader({
       </div>
 
       {/*
-        Three-column grid with min-widths. This is what fixes the Samsung A55
-        wrapping problem: the score cell cannot shrink below its content, and
-        each team cell truncates rather than wraps. Names never drop to the
-        next line and appear to belong to the wrong team.
+        Three-column grid with explicit min widths.
+        - Column 1 (home team) flexes from 0 but can grow.
+        - Column 2 (score) is auto-width — cannot shrink.
+        - Column 3 (away team) mirrors column 1.
+        Team names use `truncate whitespace-nowrap` so they show ellipsis
+        rather than wrap. This is the fix for the Samsung A55 wrap issue:
+        a long name like "Mwangaza United" never breaks to a second line,
+        and therefore never looks like a sub-label of the other team.
       */}
       <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-4 py-5">
         <TeamCell name={homeName} side="home" />
@@ -71,24 +75,22 @@ function TeamCell({ name, side }: { name: string; side: "home" | "away" }) {
   return (
     <div
       className={[
-        "flex min-w-0 flex-col gap-2",
-        side === "home" ? "items-start" : "items-end",
+        "flex min-w-0 items-center gap-2.5",
+        side === "home" ? "flex-row" : "flex-row-reverse",
       ].join(" ")}
     >
       <span
         className={[
-          "flex h-9 w-9 items-center justify-center rounded-full font-mono text-[0.7rem] font-semibold text-bg",
+          "flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-[0.7rem] font-semibold text-bg",
           side === "home" ? "bg-accent" : "bg-teal",
         ].join(" ")}
         aria-hidden
       >
         {short}
       </span>
-      {/* Truncate rather than wrap. `whitespace-nowrap` + `truncate` means
-          the name always stays on one line, even at 320px width. */}
       <span
         className={[
-          "max-w-full truncate whitespace-nowrap text-sm font-medium",
+          "min-w-0 truncate whitespace-nowrap text-sm font-medium",
           side === "home" ? "text-left" : "text-right",
         ].join(" ")}
         title={name}

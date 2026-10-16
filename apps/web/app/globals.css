@@ -76,9 +76,13 @@
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slide-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
-@keyframes roll-x {
-  from { transform: perspective(600px) rotateX(0deg); }
-  to   { transform: perspective(600px) rotateX(360deg); }
+/* Y-axis oscillation: the ball gently turns its face left, then right.
+   A full 360° spin on a flat PNG looks fake (no back face, mirrors itself).
+   A ±22° swing reads as a real object turning in place. */
+@keyframes roll-y {
+  0%   { transform: perspective(900px) rotateY(-22deg) rotateZ(-6deg); }
+  50%  { transform: perspective(900px) rotateY(22deg)  rotateZ(-6deg); }
+  100% { transform: perspective(900px) rotateY(-22deg) rotateZ(-6deg); }
 }
 
 :root { color-scheme: dark; }
@@ -135,3 +139,24 @@ body { font-family: var(--font-sans); }
 
 .focus-ring { outline: none; }
 .focus-ring:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+
+
+/* ─── Sidebar collapse ────────────────────────────────────────────────
+   The <html> element carries data-sidebar="expanded" | "collapsed".
+   A tiny inline script in app/layout.tsx reads localStorage on boot and
+   sets the attribute before first paint, so there is no flash.
+   Collapsed width is 64px; the icons remain visible and centered, labels
+   hide. Selectors target the aside element and its descendants. */
+
+[data-sidebar="collapsed"] aside[data-sidebar-root] {
+  width: 64px;
+}
+[data-sidebar="collapsed"] aside[data-sidebar-root] .sidebar-label {
+  display: none;
+}
+[data-sidebar="collapsed"] aside[data-sidebar-root] .sidebar-account {
+  justify-content: center;
+}
+[data-sidebar="collapsed"] aside[data-sidebar-root] .sidebar-account-text {
+  display: none;
+}

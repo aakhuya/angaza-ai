@@ -22,7 +22,21 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${mono.variable}`}>
+    <html lang="en" data-sidebar="expanded" className={`${inter.variable} ${mono.variable}`}>
+      <head>
+        {/* Set the sidebar state before first paint to avoid a flash of the
+            wrong width. Read from localStorage, fall back to expanded. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try {
+              var s = localStorage.getItem('angaza.sidebar');
+              document.documentElement.dataset.sidebar = (s === 'collapsed') ? 'collapsed' : 'expanded';
+            } catch (e) {
+              document.documentElement.dataset.sidebar = 'expanded';
+            }`,
+          }}
+        />
+      </head>
       <body className="min-h-screen">
         <a
           href="#main"

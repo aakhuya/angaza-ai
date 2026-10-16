@@ -4,6 +4,7 @@ import { Sidebar } from "@/components/app/Sidebar";
 import { MobileNav } from "@/components/app/MobileNav";
 import { Topbar } from "@/components/app/Topbar";
 import { getProfile } from "@/features/settings/server";
+import { serverApi } from "@/lib/api-server";
 import { getMe } from "@/lib/auth-server";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -13,6 +14,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const profile = await getProfile().catch(() => null);
   const avatarUrl = profile?.avatar_url || "";
 
+  const liveStatus = await serverApi
+    .get<{ count: number }>("/live/status")
+    .catch(() => ({ count: 0 }));
+
   return (
     <div className="flex min-h-screen bg-bg">
       <a
@@ -21,7 +26,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       >
         Skip to content
       </a>
-      <Sidebar user={user} avatarUrl={avatarUrl} />
+      <Sidebar user={user} avatarUrl={avatarUrl} hasLive={liveStatus.count > 0} />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />
         <main id="main" className="flex-1 scroll-mt-16">

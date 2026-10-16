@@ -23,12 +23,12 @@ export default function MatchesPage() {
             <Card className="h-full transition-colors group-hover:border-border-strong">
               <CardHeader>
                 <span className="text-sm font-medium">{s.label}</span>
-                <Badge tone="teal">seed 42</Badge>
+                <Badge tone="teal" title="Deterministic replay — same seed produces the same match every run">reproducible</Badge>
               </CardHeader>
               <CardBody>
                 <p className="text-sm text-text-muted">{s.blurb}</p>
-                <p className="mt-3 font-mono text-2xs text-text-faint">
-                  scenario = {s.id}
+                <p className="mt-3 font-mono text-2xs text-text-faint" title="Deterministic replay — same seed reproduces the same match">
+                  scenario = {s.id} · seed = 42
                 </p>
               </CardBody>
             </Card>

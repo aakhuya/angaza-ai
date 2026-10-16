@@ -355,3 +355,34 @@ async def upload_avatar(
         favorite_team=p.favorite_team,
         favorite_player=p.favorite_player,
     )
+
+
+# ---- account deletion ------------------------------------------------------
+
+
+@router.delete("/account", status_code=200)
+def delete_account(
+    response: Response,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> dict:
+    """Permanently delete the authenticated user's account.
+
+    Related rows (profile, preferences, refresh tokens, reset tokens) are
+    deleted via ON DELETE CASCADE in the schema. Local avatar file, if any,
+    is removed explicitly.
+    """
+    avatar = user.profile.avatar_url if user.profile else None
+    db.delete(user)
+    db.commit()
+
+    if avatar and avatar.startswith("/uploads/"):
+        from pathlib import Path as _P
+        try:
+            target = _P(os.getenv("UPLOAD_DIR", "./uploads")) / avatar.rsplit("/", 1)[-1]
+            target.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+    _clear_auth_cookies(response)
+    return {"status": "deleted"}

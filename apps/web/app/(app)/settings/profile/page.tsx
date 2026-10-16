@@ -1,5 +1,6 @@
 import { getProfile } from "@/features/settings/client";
 import { ProfileForm } from "@/features/settings/ProfileForm";
+import { DeleteAccount } from "@/features/settings/DeleteAccount";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 
 export default async function ProfilePage() {
@@ -25,6 +26,15 @@ export default async function ProfilePage() {
         <CardHeader><span className="text-sm font-medium">Profile</span></CardHeader>
         <CardBody>
           <ProfileForm initial={profile} />
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <span className="text-sm font-medium text-danger">Danger zone</span>
+        </CardHeader>
+        <CardBody>
+          <DeleteAccount />
         </CardBody>
       </Card>
     </div>
