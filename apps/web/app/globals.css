@@ -76,6 +76,10 @@
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slide-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+@keyframes roll-x {
+  from { transform: perspective(600px) rotateX(0deg); }
+  to   { transform: perspective(600px) rotateX(360deg); }
+}
 
 :root { color-scheme: dark; }
 

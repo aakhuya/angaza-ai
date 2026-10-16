@@ -42,14 +42,24 @@ export default async function DashboardPage() {
       {/* ── LIVE NOW ──────────────────────────────────────────────── */}
       <LiveBand state={state} />
 
-      {/* ── INSIGHT + AGENTS (two columns) ───────────────────────── */}
+      {/*
+        Mobile order: Latest insight → Explore (supporting cards) → Agent activity.
+        Desktop order: Latest insight and Agent activity side by side, Explore
+        spanning full width below. Handled with a single grid + CSS `order`.
+      */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
-        <LatestInsight />
-        <AgentActivity executions={agents.executions} />
-      </div>
+        <div className="order-1">
+          <LatestInsight />
+        </div>
 
-      {/* ── SUPPORTING CARDS ─────────────────────────────────────── */}
-      <SupportGrid viewerMode={preferences.viewer_mode} />
+        <div className="order-3 lg:order-2">
+          <AgentActivity executions={agents.executions} />
+        </div>
+
+        <div className="order-2 lg:order-3 lg:col-span-2">
+          <SupportGrid viewerMode={preferences.viewer_mode} />
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 
 import type { PasswordReport } from "@/lib/password";
@@ -13,7 +14,11 @@ const RULE_LABELS: Array<[keyof PasswordReport["rules"], string]> = [
 ];
 
 export function PasswordField({
-  value, onChange, autoComplete = "new-password", showRequirements = true, label = "Password",
+  value,
+  onChange,
+  autoComplete = "new-password",
+  showRequirements = true,
+  label = "Password",
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -49,9 +54,13 @@ export function PasswordField({
 
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-text-muted">
+      <label
+        htmlFor={id}
+        className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-text-muted"
+      >
         {label}
       </label>
+
       <div className="relative">
         <input
           id={id}
@@ -59,21 +68,30 @@ export function PasswordField({
           autoComplete={autoComplete}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="h-11 w-full rounded-md border border-border bg-bg-surface pl-3 pr-20 text-sm text-text placeholder:text-text-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+          className="h-11 w-full rounded-md border border-border bg-bg-surface pl-3 pr-11 text-sm text-text placeholder:text-text-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
           aria-describedby={showRequirements ? `${id}-rules` : undefined}
         />
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
-          className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded px-2.5 py-1.5 text-2xs font-medium uppercase tracking-wider text-text-muted hover:text-text focus-ring"
+          aria-label={visible ? "Hide password" : "Show password"}
           aria-pressed={visible}
+          className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded text-text-muted hover:text-text focus-ring"
         >
-          {visible ? "Hide" : "Show"}
+          {visible ? (
+            <EyeOff size={16} strokeWidth={1.75} aria-hidden />
+          ) : (
+            <Eye size={16} strokeWidth={1.75} aria-hidden />
+          )}
         </button>
       </div>
 
       {showRequirements && (
-        <ul id={`${id}-rules`} className="mt-2 grid grid-cols-1 gap-1 sm:grid-cols-2" aria-live="polite">
+        <ul
+          id={`${id}-rules`}
+          className="mt-2 grid grid-cols-1 gap-1 sm:grid-cols-2"
+          aria-live="polite"
+        >
           {RULE_LABELS.map(([key, label]) => {
             const ok = report?.rules[key] ?? false;
             const touched = !!value;
@@ -98,7 +116,11 @@ export function PasswordField({
 
 function RuleDot({ state }: { state: "idle" | "ok" | "pending" }) {
   const color =
-    state === "ok" ? "bg-success" : state === "pending" ? "bg-text-faint" : "bg-border";
+    state === "ok"
+      ? "bg-success"
+      : state === "pending"
+        ? "bg-text-faint"
+        : "bg-border";
   return (
     <span
       aria-hidden
