@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { ErrorState } from "@/components/ui/ErrorState";
 import { InsightFeed } from "@/components/match/InsightFeed";
@@ -9,6 +9,7 @@ import { MatchHeader } from "@/components/match/MatchHeader";
 import { MomentumChart } from "@/components/match/MomentumChart";
 import { StatGrid } from "@/components/match/StatGrid";
 import { ViewerModeSwitcher } from "@/components/match/ViewerModeSwitcher";
+import { AgentTrace } from "@/components/match/AgentTrace";
 import { useMatchStream } from "@/features/match/useMatchStream";
 import type { Scenario, ViewerMode } from "@/types/api";
 
@@ -21,6 +22,24 @@ export function LiveMatchView({
   const { state, insights, status, error } = useMatchStream(matchId, {
     scenario, seed, viewerMode, autoStart: true,
   });
+
+  const [executions, setExecutions] = useState<import("@/types/api").AgentExecution[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        const res = await fetch(`/api/agents/executions?match_id=${encodeURIComponent(matchId)}&limit=50`, { credentials: "include" });
+        if (!res.ok || cancelled) return;
+        const body = await res.json();
+        if (!cancelled) setExecutions(body.executions ?? []);
+      } catch {
+        // Non-fatal; the trace stays at its previous state.
+      }
+    }
+    load();
+    const t = setInterval(load, 5000);
+    return () => { cancelled = true; clearInterval(t); };
+  }, [matchId]);
 
   const keyMoment = insights.length > 0 ? insights[insights.length - 1] : null;
 
@@ -39,8 +58,10 @@ export function LiveMatchView({
       {error && <ErrorState title="Stream error" description={error} />}
 
       <MatchHeader
-        homeName={state?.home.team_id ?? "HOME"}
-        awayName={state?.away.team_id ?? "AWAY"}
+        homeName={state?.home.team_id === "HOME" ? "Angaza FC" : (state?.home.team_id ?? "HOME")}
+        awayName={state?.away.team_id === "AWAY" ? "Mwangaza United" : (state?.away.team_id ?? "AWAY")}
+        homeMonogram="ANG"
+        awayMonogram="MWU"
         homeScore={state?.home_score ?? 0}
         awayScore={state?.away_score ?? 0}
         minute={state?.minute ?? 0}
@@ -84,6 +105,7 @@ export function LiveMatchView({
             <span className="font-mono text-2xs text-text-faint">{insights.length}</span>
           </div>
           <InsightFeed insights={insights} />
+          <AgentTrace matchId={matchId} executions={executions} />
         </div>
       </div>
     </div>

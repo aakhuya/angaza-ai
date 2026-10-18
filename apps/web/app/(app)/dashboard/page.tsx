@@ -96,11 +96,11 @@ function HeroBanner({ greeting }: { greeting: string }) {
         />
 
         <div className="relative flex h-full flex-col px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
-          <p className="font-mono text-[0.6rem] uppercase tracking-[0.22em] text-accent">
-            Welcome back, {greeting.split(" ")[0].toUpperCase()}
-          </p>
           <div className="mt-auto max-w-xl pb-1">
-            <h1 className="text-[1.75rem] font-semibold leading-[1.05] tracking-tight sm:text-[2.25rem] lg:text-[2.5rem]">
+            <p className="font-mono text-[0.6rem] uppercase tracking-[0.22em] text-accent">
+              Angaza AI · football intelligence
+            </p>
+            <h1 className="mt-2 text-[1.9rem] font-semibold leading-[1.05] tracking-tight sm:text-[2.4rem] lg:text-[2.75rem]">
               Football intelligence
               <br />
               <span className="text-accent">for a deeper game.</span>

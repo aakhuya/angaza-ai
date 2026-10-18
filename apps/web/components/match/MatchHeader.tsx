@@ -3,6 +3,8 @@ import { Badge } from "@/components/ui/Badge";
 export function MatchHeader({
   homeName,
   awayName,
+  homeMonogram,
+  awayMonogram,
   homeScore,
   awayScore,
   minute,
@@ -11,6 +13,8 @@ export function MatchHeader({
 }: {
   homeName: string;
   awayName: string;
+  homeMonogram?: string;
+  awayMonogram?: string;
   homeScore: number;
   awayScore: number;
   minute: number;
@@ -48,7 +52,7 @@ export function MatchHeader({
         and therefore never looks like a sub-label of the other team.
       */}
       <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-4 py-5">
-        <TeamCell name={homeName} side="home" />
+        <TeamCell name={homeName} monogram={homeMonogram} side="home" />
 
         <div className="flex flex-col items-center">
           <div className="flex items-baseline gap-2 font-mono tabular-nums">
@@ -58,19 +62,29 @@ export function MatchHeader({
           </div>
         </div>
 
-        <TeamCell name={awayName} side="away" />
+        <TeamCell name={awayName} monogram={awayMonogram} side="away" />
       </div>
     </div>
   );
 }
 
-function TeamCell({ name, side }: { name: string; side: "home" | "away" }) {
-  const short = name
-    .split(/\s+/)
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+function TeamCell({
+  name,
+  monogram,
+  side,
+}: {
+  name: string;
+  monogram?: string;
+  side: "home" | "away";
+}) {
+  const short =
+    monogram ??
+    name
+      .split(/\s+/)
+      .map((w) => w[0])
+      .join("")
+      .slice(0, 3)
+      .toUpperCase();
 
   return (
     <div

@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { getAgentStats, getExecutions } from "@/features/agents/client";
+import { getCurrentMatch } from "@/lib/currentMatch";
 import type { AgentExecution } from "@/types/api";
 
 const CHAIN_ORDER = ["tactical", "match_intelligence", "narrative", "personalization"] as const;
@@ -20,12 +21,17 @@ const STAGE_DESCRIPTION: Record<string, string> = {
   personalization: "Adapts tone to viewer mode",
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AgentsPage({
   searchParams,
 }: {
-  searchParams: { match_id?: string };
+  searchParams: Promise<{ match_id?: string }>;
 }) {
-  const matchId = searchParams.match_id ?? "balanced-42-analyst";
+  const params = await searchParams;
+  const current = await getCurrentMatch();
+  const matchId = params.match_id ?? current.matchId;
 
   const [executionsRes, statsRes] = await Promise.all([
     getExecutions(matchId, 300).catch(() => ({ match_id: matchId, count: 0, executions: [] as AgentExecution[] })),
@@ -95,10 +101,28 @@ export default async function AgentsPage({
         </CardHeader>
         <CardBody>
           {chain.length === 0 ? (
-            <EmptyState
-              title="No agent runs yet"
-              description="Start a match on /live — agent executions will appear here as the pipeline fires."
-            />
+            <div className="space-y-3">
+              <EmptyState
+                title="No agent runs yet"
+                description="Agent executions are recorded when a live match triggers an important event. Start one of the scenarios below."
+              />
+              <div className="flex flex-wrap gap-2">
+                {["balanced", "high_press", "dominant_possession", "counter_attack", "late_comeback"].map((s) => (
+                  <Link
+                    key={s}
+                    href={`/matches/${s}`}
+                    className="rounded-md border border-border bg-bg-elevated px-3 py-1.5 text-xs font-medium text-text-muted hover:text-text focus-ring"
+                  >
+                    Start {s.replace("_", " ")} →
+                  </Link>
+                ))}
+              </div>
+              <p className="text-xs text-text-faint">
+                Wait 15–20 seconds after starting a match. The first
+                important event will fire the pipeline, and executions
+                will appear here automatically on your next reload.
+              </p>
+            </div>
           ) : (
             <ol className="space-y-3">
               {CHAIN_ORDER.map((agent, i) => {

@@ -7,39 +7,52 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { StatGrid } from "@/components/match/StatGrid";
 import { SCENARIOS } from "@/features/matches/scenarios";
-import { getSnapshot } from "@/features/match/server";
+import { getSnapshot, getTeams } from "@/features/match/server";
 
 export default async function AnalysisPage({
   params,
 }: {
   params: Promise<{ scenario: string }>;
 }) {
-  const { scenario } = await params;
-  const meta = SCENARIOS.find((s) => s.id === scenario);
+  const p = await params;
+  const meta = SCENARIOS.find((s) => s.id === p.scenario);
   if (!meta) notFound();
 
-  let snapshot;
+  let snap, teams;
   try {
-    snapshot = await getSnapshot(meta.id, 42);
+    [snap, teams] = await Promise.all([
+      getSnapshot(meta.id, 42),
+      getTeams(meta.id),
+    ]);
   } catch {
-    return <ErrorState title="Analysis unavailable" description="Could not load analysis for this scenario." />;
+    return (
+      <ErrorState
+        title="Analysis unavailable"
+        description="Could not load analysis for this scenario. Is the API running?"
+      />
+    );
   }
 
-  const { state } = snapshot;
-  const topPlayers = Object.values(state.players)
+  const state = snap.state;
+  const nameById = new Map<string, string>();
+  for (const tp of [...teams.home.players, ...teams.away.players]) {
+    nameById.set(tp.id, tp.name);
+  }
+  const topPlayers = Object.values(state.players ?? {})
     .sort((a, b) => b.involvement_score - a.involvement_score)
-    .slice(0, 6);
+    .slice(0, 8)
+    .filter((p) => p.involvement_score > 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 lg:space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">Analysis</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight capitalize">
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight capitalize sm:text-3xl">
             {meta.label} · full time
           </h1>
           <p className="mt-1 text-sm text-text-muted">
-            Deterministic state from seed {snapshot.seed}. Numbers come from analytics; explanations come from agents.
+            Deterministic state from seed {snap.seed}. Numbers come from analytics; explanations come from agents.
           </p>
         </div>
         <div className="flex gap-2">
@@ -65,7 +78,7 @@ export default async function AnalysisPage({
         </CardHeader>
         <CardBody>
           {topPlayers.length === 0 ? (
-            <p className="text-sm text-text-muted">No player data.</p>
+            <p className="text-sm text-text-muted">No player data for this scenario.</p>
           ) : (
             <ul className="divide-y divide-border">
               {topPlayers.map((p) => (
@@ -75,7 +88,7 @@ export default async function AnalysisPage({
                       href={`/players/${encodeURIComponent(p.player_id)}?scenario=${meta.id}`}
                       className="text-sm font-medium hover:text-accent"
                     >
-                      {p.player_id}
+                      {nameById.get(p.player_id) ?? p.player_id}
                     </Link>
                     <div className="mt-0.5 font-mono text-2xs text-text-faint">
                       {p.team_id} · {p.goals}G · {p.shots}S · {p.progressive_passes}PP · {p.defensive_actions}DEF

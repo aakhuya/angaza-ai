@@ -44,7 +44,7 @@ export function LogoMark({ size = 36 }: { size?: number }) {
       width={size}
       height={size}
       priority
-      className="rounded-md"
+      className="object-contain"
     />
   );
 }

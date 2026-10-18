@@ -72,10 +72,16 @@ def _issue_refresh(db: Session, user: User) -> str:
 
 
 def _user_response(user: User) -> UserResponse:
+    # Prefer the profile display name; it is the field users edit from
+    # /settings/profile. The users table has no display_name column.
+    name = ""
+    if user.profile and user.profile.display_name:
+        name = user.profile.display_name
     return UserResponse(
         id=user.id,
         email=user.email,
-        display_name=user.profile.display_name if user.profile else "",
+        display_name=name,
+        username=user.username,
     )
 
 

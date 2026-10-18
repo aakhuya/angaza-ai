@@ -1,12 +1,23 @@
-import "server-only";
-
-import { serverApi } from "@/lib/api-server";
+import { api } from "@/lib/api";
 import type { MatchState } from "@/types/api";
 
 export type ScenarioSnapshot = { scenario: string; seed: number; state: MatchState };
 
 export function getSnapshot(scenario: string, seed = 42) {
-  return serverApi.get<ScenarioSnapshot>(`/scenarios/${scenario}/snapshot?seed=${seed}`);
+  return api.get<ScenarioSnapshot>(`/scenarios/${scenario}/snapshot?seed=${seed}`);
+}
+
+export type RosterPlayer = { id: string; name: string; position: string; number: number };
+export type RosterTeam = {
+  id: string;
+  name: string;
+  short_name: string;
+  players: RosterPlayer[];
+};
+export type ScenarioTeams = { scenario: string; home: RosterTeam; away: RosterTeam };
+
+export function getTeams(scenario: string) {
+  return api.get<ScenarioTeams>(`/scenarios/${scenario}/teams`);
 }
 
 export type Recap = {
@@ -24,7 +35,7 @@ export type Recap = {
 };
 
 export function getRecap(scenario: string, seed = 42) {
-  return serverApi.get<{ scenario: string; seed: number; recap: Recap }>(
+  return api.get<{ scenario: string; seed: number; recap: Recap }>(
     `/scenarios/${scenario}/recap?seed=${seed}`,
   );
 }
@@ -32,16 +43,29 @@ export function getRecap(scenario: string, seed = 42) {
 export type PlayerDetail = {
   scenario: string;
   seed: number;
-  player: { id: string; name: string; position: string; number: number; team_id: string; team_name: string };
+  player: {
+    id: string;
+    name: string;
+    position: string;
+    number: number;
+    team_id: string;
+    team_name: string;
+  };
   stats: null | {
-    player_id: string; team_id: string; passes_completed: number; progressive_passes: number;
-    shots: number; goals: number; defensive_actions: number; distance_covered_m: number;
+    player_id: string;
+    team_id: string;
+    passes_completed: number;
+    progressive_passes: number;
+    shots: number;
+    goals: number;
+    defensive_actions: number;
+    distance_covered_m: number;
     involvement_score: number;
   };
 };
 
 export function getPlayer(scenario: string, playerId: string, seed = 42) {
-  return serverApi.get<PlayerDetail>(
+  return api.get<PlayerDetail>(
     `/scenarios/${scenario}/players/${encodeURIComponent(playerId)}?seed=${seed}`,
   );
 }

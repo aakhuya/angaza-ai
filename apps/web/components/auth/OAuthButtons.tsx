@@ -23,7 +23,7 @@ async function start(provider: "google" | "apple") {
   }
 }
 
-export function OAuthButtons() {
+export function OAuthButtons({ enabled = false }: { enabled?: boolean }) {
   return (
     <div className="grid grid-cols-2 gap-2">
       <button

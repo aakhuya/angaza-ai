@@ -16,6 +16,7 @@ class UserResponse(BaseModel):
     id: str
     email: EmailStr
     display_name: str
+    username: str | None = None
 
 
 class ProfilePatch(BaseModel):

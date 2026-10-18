@@ -1,15 +1,27 @@
+"""
+Synthetic team and player roster.
+
+Player names are drawn from common Kenyan first/last names so the simulated
+matches feel grounded. Team names are invented Swahili-flavoured clubs — no
+real team or league is represented.
+
+Team IDs remain "HOME" and "AWAY" so the rest of the pipeline (analytics,
+verification, storage) is unchanged.
+"""
 from dataclasses import dataclass
 
 FIRST_NAMES = [
-    "Amir", "Bruno", "Chidi", "Diego", "Emeka", "Felix", "Gabriel", "Hugo",
-    "Idris", "Jonas", "Kwame", "Luca", "Mateo", "Noah", "Omar", "Pablo",
-    "Quinn", "Rafael", "Sami", "Tariq", "Umar", "Victor", "Wale", "Yusuf",
+    "Mwangi", "Ochieng", "Kamau", "Otieno", "Njoroge", "Wanjiru", "Kipchoge",
+    "Kiptoo", "Odhiambo", "Mutua", "Kimani", "Waweru", "Cheruiyot", "Onyango",
+    "Wekesa", "Barasa", "Karanja", "Githinji", "Maina", "Kariuki",
 ]
+
 LAST_NAMES = [
-    "Adeyemi", "Baraka", "Costa", "Diallo", "Eriksen", "Ferreira", "Gomez",
-    "Hassan", "Ibrahim", "Jensen", "Kone", "Lopez", "Mensah", "Ndidi",
-    "Okafor", "Pereira", "Rossi", "Silva", "Traore", "Vega",
+    "Achieng", "Njeri", "Wanjiku", "Kiprotich", "Kipkemboi", "Osoro",
+    "Owino", "Owuor", "Mugambi", "Mutiso", "Kibet", "Rotich", "Chebet",
+    "Kurgat", "Wafula", "Simiyu", "Nyambura", "Wambui", "Njoki", "Auma",
 ]
+
 POSITIONS = ["GK", "DF", "DF", "DF", "DF", "MF", "MF", "MF", "FW", "FW", "FW"]
 
 
@@ -27,6 +39,9 @@ class RosterTeam:
     name: str
     short_name: str
     color: str
+    # Two-to-three-letter monogram used as a "crest" in the UI.
+    # Avoids brand assets entirely, but reads as a real team mark.
+    monogram: str
     players: tuple[RosterPlayer, ...]
 
 
@@ -35,6 +50,7 @@ def build_team(
     name: str,
     short_name: str,
     color: str,
+    monogram: str,
     name_offset: int,
 ) -> RosterTeam:
     players: list[RosterPlayer] = []
@@ -50,12 +66,39 @@ def build_team(
             )
         )
     return RosterTeam(
-        id=team_id, name=name, short_name=short_name, color=color,
+        id=team_id,
+        name=name,
+        short_name=short_name,
+        color=color,
+        monogram=monogram,
         players=tuple(players),
     )
 
 
 def default_teams() -> tuple[RosterTeam, RosterTeam]:
-    home = build_team("HOME", "Angaza FC", "ANG", "#E8A33D", name_offset=0)
-    away = build_team("AWAY", "Mwangaza United", "MWU", "#3FB6A8", name_offset=7)
+    """
+    Angaza FC (home) and Mwangaza United (away).
+
+    Names are invented Swahili-flavoured clubs:
+    - "Angaza"  → "illuminate" (matches the product name)
+    - "Mwangaza" → "light / radiance"
+
+    Both are fictional and do not correspond to any real club.
+    """
+    home = build_team(
+        team_id="HOME",
+        name="Angaza FC",
+        short_name="ANG",
+        color="#E8BC67",
+        monogram="ANG",
+        name_offset=0,
+    )
+    away = build_team(
+        team_id="AWAY",
+        name="Mwangaza United",
+        short_name="MWU",
+        color="#39D6B0",
+        monogram="MWU",
+        name_offset=7,
+    )
     return home, away

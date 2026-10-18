@@ -23,3 +23,17 @@ export async function uploadAvatar(file: File): Promise<Profile> {
   }
   return res.json();
 }
+
+
+export type TeamOption = {
+  id: string;
+  name: string;
+  short_name: string;
+  players: Array<{ id: string; name: string; position: string; number: number }>;
+};
+
+export function getTeams() {
+  return fetch("/api/scenarios/balanced/teams", { credentials: "include" })
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error("teams fetch failed"))))
+    .then((body: { home: TeamOption; away: TeamOption }) => [body.home, body.away]);
+}

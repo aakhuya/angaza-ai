@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { MobileBottomNav } from "@/components/app/MobileBottomNav";
 import { TopNav } from "@/components/app/TopNav";
 import { getProfile } from "@/features/settings/server";
 import { getMe } from "@/lib/auth-server";
@@ -27,11 +28,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
       <TopNav user={user} avatarUrl={avatarUrl} hasLive={liveStatus.count > 0} />
 
-      <main id="main" className="flex-1 scroll-mt-16">
+      <main id="main" className="flex-1 scroll-mt-16 pb-24 lg:pb-0">
         <div className="mx-auto w-full max-w-[1500px] px-5 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
           {children}
         </div>
       </main>
+
+      <MobileBottomNav hasLive={liveStatus.count > 0} />
     </div>
   );
 }
