@@ -139,24 +139,3 @@ body { font-family: var(--font-sans); }
 
 .focus-ring { outline: none; }
 .focus-ring:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
-
-
-/* ─── Sidebar collapse ────────────────────────────────────────────────
-   The <html> element carries data-sidebar="expanded" | "collapsed".
-   A tiny inline script in app/layout.tsx reads localStorage on boot and
-   sets the attribute before first paint, so there is no flash.
-   Collapsed width is 64px; the icons remain visible and centered, labels
-   hide. Selectors target the aside element and its descendants. */
-
-[data-sidebar="collapsed"] aside[data-sidebar-root] {
-  width: 64px;
-}
-[data-sidebar="collapsed"] aside[data-sidebar-root] .sidebar-label {
-  display: none;
-}
-[data-sidebar="collapsed"] aside[data-sidebar-root] .sidebar-account {
-  justify-content: center;
-}
-[data-sidebar="collapsed"] aside[data-sidebar-root] .sidebar-account-text {
-  display: none;
-}

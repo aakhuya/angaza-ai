@@ -13,7 +13,7 @@ export default async function ProfilePage() {
   }));
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto w-full max-w-3xl space-y-6 lg:space-y-8">
       <header>
         <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">Settings</p>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">Your account</h1>

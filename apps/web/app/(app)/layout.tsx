@@ -1,11 +1,9 @@
 import { redirect } from "next/navigation";
 
-import { Sidebar } from "@/components/app/Sidebar";
-import { MobileNav } from "@/components/app/MobileNav";
-import { Topbar } from "@/components/app/Topbar";
+import { TopNav } from "@/components/app/TopNav";
 import { getProfile } from "@/features/settings/server";
-import { serverApi } from "@/lib/api-server";
 import { getMe } from "@/lib/auth-server";
+import { serverApi } from "@/lib/api-server";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getMe();
@@ -19,23 +17,21 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     .catch(() => ({ count: 0 }));
 
   return (
-    <div className="flex min-h-screen bg-bg">
+    <div className="flex min-h-screen flex-col bg-bg">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-bg-elevated focus:px-4 focus:py-2 focus:text-sm focus:text-text focus-ring"
       >
         Skip to content
       </a>
-      <Sidebar user={user} avatarUrl={avatarUrl} hasLive={liveStatus.count > 0} />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar />
-        <main id="main" className="flex-1 scroll-mt-16">
-          <div className="mx-auto w-full max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
-            {children}
-          </div>
-        </main>
-        <MobileNav />
-      </div>
+
+      <TopNav user={user} avatarUrl={avatarUrl} hasLive={liveStatus.count > 0} />
+
+      <main id="main" className="flex-1 scroll-mt-16">
+        <div className="mx-auto w-full max-w-[1500px] px-5 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }

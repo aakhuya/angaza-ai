@@ -43,7 +43,7 @@ export default async function PlayersIndexPage() {
     .slice(0, 12);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 lg:space-y-8">
       <header>
         <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">Players</p>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">Player intelligence</h1>

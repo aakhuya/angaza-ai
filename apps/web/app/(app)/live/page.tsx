@@ -14,7 +14,7 @@ import { SCENARIOS } from "@/features/matches/scenarios";
  */
 export default function LiveIndexPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 lg:space-y-8">
       <header>
         <p className="font-mono text-2xs uppercase tracking-[0.2em] text-live-red">
           Live now

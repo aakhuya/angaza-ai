@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api.agents import router as agents_router
+from app.api.agents_stats import router as agents_stats_router
 from app.api.auth import router as auth_router
 from app.api.health import router as health_router
 from app.api.live import router as live_router
@@ -59,6 +60,7 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(matches_router)
     app.include_router(agents_router)
+    app.include_router(agents_stats_router)
     app.include_router(auth_router)
     app.include_router(scenarios_router)
     app.include_router(oauth_router)

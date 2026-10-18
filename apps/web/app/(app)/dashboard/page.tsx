@@ -35,7 +35,7 @@ export default async function DashboardPage() {
   const greeting = profile.display_name || "there";
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
+    <div className="space-y-8 lg:space-y-10">
       {/* ── HERO ──────────────────────────────────────────────────── */}
       <HeroBanner greeting={greeting} />
 

@@ -6,7 +6,7 @@ import { SCENARIOS } from "@/features/matches/scenarios";
 
 export default function MatchesPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 lg:space-y-8">
       <div>
         <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">Matches</p>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">Choose a scenario</h1>

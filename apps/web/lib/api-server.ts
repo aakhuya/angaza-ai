@@ -1,3 +1,5 @@
+import "server-only";
+
 import { cookies } from "next/headers";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
@@ -5,6 +7,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000"
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
+
   const res = await fetch(`${API_BASE}${path}`, {
     ...init,
     cache: "no-store",
@@ -14,6 +17,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
       ...(init.headers ?? {}),
     },
   });
+
   if (!res.ok) {
     throw new Error(`API ${res.status} for ${path}`);
   }

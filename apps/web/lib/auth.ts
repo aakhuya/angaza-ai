@@ -1,6 +1,19 @@
 import { api } from "./api";
 import type { User } from "@/types/api";
 
+/**
+ * Browser-side auth helpers.
+ *
+ * Every function here talks to the API via /api/* which is proxied by
+ * next.config.ts. That means cookies go through the same-origin rule and
+ * work with credentials: "include" (already set in lib/api.ts).
+ *
+ * These functions are safe to call from Client Components.
+ *
+ * For the current user on the server (Server Components), import from
+ * lib/auth-server.ts instead.
+ */
+
 export async function signup(
   email: string,
   password: string,
