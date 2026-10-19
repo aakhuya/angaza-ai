@@ -1,10 +1,8 @@
 import os as _os
 from contextlib import asynccontextmanager
-from pathlib import Path as _Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
 from app.api.agents import router as agents_router
 from app.api.agents_stats import router as agents_stats_router
@@ -66,10 +64,6 @@ def create_app() -> FastAPI:
     app.include_router(oauth_router)
     app.include_router(password_router)
     app.include_router(live_router)
-
-    uploads = _Path(_os.getenv("UPLOAD_DIR", "./uploads"))
-    uploads.mkdir(parents=True, exist_ok=True)
-    app.mount("/uploads", StaticFiles(directory=uploads), name="uploads")
 
     return app
 

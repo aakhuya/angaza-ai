@@ -1,10 +1,17 @@
-import os
-import secrets
-from contextlib import suppress
+"""Authentication, profile, preferences, avatar, and account deletion."""
+import base64
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
 
-from fastapi import APIRouter, Depends, File, HTTPException, Request, Response, UploadFile, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    HTTPException,
+    Request,
+    Response,
+    UploadFile,
+    status,
+)
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -36,13 +43,20 @@ from app.schemas.auth import (
 router = APIRouter(tags=["auth"])
 log = get_logger("angaza.auth")
 
+ALLOWED_AVATAR_TYPES = {"image/png", "image/jpeg", "image/webp"}
+MAX_AVATAR_BYTES = 3 * 1024 * 1024  # 3 MB
+
+
+# -- helpers ----------------------------------------------------------------
+
 
 def _set_auth_cookies(response: Response, access: str, refresh: str) -> None:
     settings = get_settings()
-    # TEMPORARY DEBUG: force insecure Lax cookies in dev so we can prove
-    # the 401 is a cookie-transport problem. Revert after diagnosis.
-    log.info("set_auth_cookies", app_env=settings.app_env, is_dev=settings.is_dev)
-    common = dict(httponly=True, samesite="lax", secure=False, path="/")
+    is_dev = settings.app_env.strip().lower() in {"development", "dev", "local", ""}
+    if is_dev:
+        common = dict(httponly=True, samesite="lax", secure=False, path="/")
+    else:
+        common = dict(httponly=True, samesite="none", secure=True, path="/")
     response.set_cookie(
         ACCESS_COOKIE, access, max_age=settings.jwt_access_ttl_minutes * 60, **common
     )
@@ -52,10 +66,10 @@ def _set_auth_cookies(response: Response, access: str, refresh: str) -> None:
 
 
 def _clear_auth_cookies(response: Response) -> None:
-    settings = get_settings()
-    common = dict(path="/", samesite="none", secure=not settings.is_dev)
-    response.delete_cookie(ACCESS_COOKIE, **common)
-    response.delete_cookie(REFRESH_COOKIE, **common)
+    response.delete_cookie(ACCESS_COOKIE, path="/")
+    response.delete_cookie(REFRESH_COOKIE, path="/")
+
+
 def _issue_refresh(db: Session, user: User) -> str:
     settings = get_settings()
     raw, hashed = new_refresh_token()
@@ -72,24 +86,22 @@ def _issue_refresh(db: Session, user: User) -> str:
 
 
 def _user_response(user: User) -> UserResponse:
-    # Prefer the profile display name; it is the field users edit from
+    # Prefer the profile display name — that is the field edited from
     # /settings/profile. The users table has no display_name column.
     name = ""
     if user.profile and user.profile.display_name:
         name = user.profile.display_name
-    return UserResponse(
-        id=user.id,
-        email=user.email,
-        display_name=name,
-        username=user.username,
-    )
+    return UserResponse(id=user.id, email=user.email, display_name=name)
 
 
-@router.post("/auth/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+# -- auth -------------------------------------------------------------------
+
+
+@router.post(
+    "/auth/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED
+)
 def signup(
-    payload: SignupRequest,
-    response: Response,
-    db: Session = Depends(get_db),
+    payload: SignupRequest, response: Response, db: Session = Depends(get_db)
 ) -> UserResponse:
     try:
         assert_password_valid(payload.password)
@@ -118,12 +130,9 @@ def signup(
 
 @router.post("/auth/login", response_model=UserResponse)
 def login(
-    payload: LoginRequest,
-    response: Response,
-    db: Session = Depends(get_db),
+    payload: LoginRequest, response: Response, db: Session = Depends(get_db)
 ) -> UserResponse:
-    email = payload.email.lower()
-    user = db.scalar(select(User).where(User.email == email))
+    user = db.scalar(select(User).where(User.email == payload.email.lower()))
     if user is None or not verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
@@ -154,9 +163,7 @@ def logout(
 
 @router.post("/auth/refresh", response_model=UserResponse)
 def refresh(
-    request: Request,
-    response: Response,
-    db: Session = Depends(get_db),
+    request: Request, response: Response, db: Session = Depends(get_db)
 ) -> UserResponse:
     raw = request.cookies.get(REFRESH_COOKIE)
     if not raw:
@@ -187,7 +194,7 @@ def me(user: User = Depends(get_current_user)) -> UserResponse:
     return _user_response(user)
 
 
-# ---- profile ---------------------------------------------------------------
+# -- profile ----------------------------------------------------------------
 
 
 @router.get("/profile", response_model=ProfileResponse)
@@ -217,8 +224,9 @@ def patch_profile(
         if value is not None:
             setattr(p, field, value)
     if payload.username is not None:
-        # Reject duplicates explicitly.
-        conflict = db.scalar(select(User).where(User.username == payload.username, User.id != user.id))
+        conflict = db.scalar(
+            select(User).where(User.username == payload.username, User.id != user.id)
+        )
         if conflict is not None:
             raise HTTPException(status_code=409, detail="Username already taken")
         user.username = payload.username
@@ -233,7 +241,46 @@ def patch_profile(
     )
 
 
-# ---- preferences -----------------------------------------------------------
+@router.post("/profile/avatar", response_model=ProfileResponse)
+async def upload_avatar(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+) -> ProfileResponse:
+    """Accept a small image and store it as a base64 data URL on the profile.
+
+    Vercel Functions have no persistent disk, so file storage would be lost on
+    every deploy. A data URL keeps everything in Postgres — cheap and honest
+    for a demo. For production you would swap in S3 or Cloudinary; the schema
+    (``profiles.avatar_url``) is unchanged either way.
+    """
+    if file.content_type not in ALLOWED_AVATAR_TYPES:
+        raise HTTPException(status_code=400, detail="Unsupported image type")
+    content = await file.read()
+    if len(content) > MAX_AVATAR_BYTES:
+        raise HTTPException(status_code=400, detail="Image too large (max 3 MB)")
+
+    encoded = base64.b64encode(content).decode("ascii")
+    data_url = f"data:{file.content_type};base64,{encoded}"
+
+    p = user.profile
+    if p is None:
+        p = Profile(user_id=user.id)
+        db.add(p)
+    p.avatar_url = data_url
+    db.commit()
+    db.refresh(p)
+
+    return ProfileResponse(
+        display_name=p.display_name,
+        username=user.username,
+        avatar_url=p.avatar_url or "",
+        favorite_team=p.favorite_team,
+        favorite_player=p.favorite_player,
+    )
+
+
+# -- preferences ------------------------------------------------------------
 
 
 @router.get("/preferences", response_model=PreferencesResponse)
@@ -269,7 +316,7 @@ def patch_preferences(
     )
 
 
-# ---- onboarding ------------------------------------------------------------
+# -- onboarding -------------------------------------------------------------
 
 
 @router.get("/onboarding", response_model=OnboardingResponse)
@@ -314,56 +361,7 @@ def complete_onboarding(
     )
 
 
-# ---- avatar upload ---------------------------------------------------------
-
-
-UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "./uploads"))
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-ALLOWED_AVATAR_TYPES = {"image/png", "image/jpeg", "image/webp"}
-MAX_AVATAR_BYTES = 3 * 1024 * 1024  # 3 MB
-
-
-@router.post("/profile/avatar", response_model=ProfileResponse)
-async def upload_avatar(
-    file: UploadFile = File(...),
-    db: Session = Depends(get_db),
-    user: User = Depends(get_current_user),
-) -> ProfileResponse:
-    if file.content_type not in ALLOWED_AVATAR_TYPES:
-        raise HTTPException(status_code=400, detail="Unsupported image type")
-    content = await file.read()
-    if len(content) > MAX_AVATAR_BYTES:
-        raise HTTPException(status_code=400, detail="Image too large (max 3 MB)")
-
-    ext = {"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp"}[file.content_type]
-    name = f"{user.id}-{secrets.token_hex(4)}.{ext}"
-    target = UPLOAD_DIR / name
-    target.write_bytes(content)
-
-    p = user.profile
-    if p is None:
-        p = Profile(user_id=user.id)
-        db.add(p)
-    # Delete the previous avatar file if it was one of ours.
-    if p.avatar_url and p.avatar_url.startswith("/uploads/"):
-        old = UPLOAD_DIR / p.avatar_url.rsplit("/", 1)[-1]
-        with suppress(OSError):
-            old.unlink(missing_ok=True)
-
-    p.avatar_url = f"/uploads/{name}"
-    db.commit()
-    db.refresh(p)
-
-    return ProfileResponse(
-        display_name=p.display_name,
-        username=user.username,
-        avatar_url=p.avatar_url or "",
-        favorite_team=p.favorite_team,
-        favorite_player=p.favorite_player,
-    )
-
-
-# ---- account deletion ------------------------------------------------------
+# -- account deletion -------------------------------------------------------
 
 
 @router.delete("/account", status_code=200)
@@ -375,20 +373,10 @@ def delete_account(
     """Permanently delete the authenticated user's account.
 
     Related rows (profile, preferences, refresh tokens, reset tokens) are
-    deleted via ON DELETE CASCADE in the schema. Local avatar file, if any,
-    is removed explicitly.
+    deleted via ON DELETE CASCADE in the schema. A base64 avatar lives on the
+    profile row, so it is removed with the row — no filesystem cleanup needed.
     """
-    avatar = user.profile.avatar_url if user.profile else None
     db.delete(user)
     db.commit()
-
-    if avatar and avatar.startswith("/uploads/"):
-        from pathlib import Path as _P
-        try:
-            target = _P(os.getenv("UPLOAD_DIR", "./uploads")) / avatar.rsplit("/", 1)[-1]
-            target.unlink(missing_ok=True)
-        except OSError:
-            pass
-
     _clear_auth_cookies(response)
     return {"status": "deleted"}

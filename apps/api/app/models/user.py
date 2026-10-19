@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 import sqlalchemy as sa
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, String
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin
@@ -38,7 +38,7 @@ class Profile(Base, TimestampMixin):
     display_name: Mapped[str] = mapped_column(String(80), default="")
     favorite_team: Mapped[str] = mapped_column(String(80), default="")
     favorite_player: Mapped[str] = mapped_column(String(80), default="")
-    avatar_url: Mapped[str] = mapped_column(String(255), default="")
+    avatar_url: Mapped[str] = mapped_column(Text, default="")
 
     user: Mapped[User] = relationship(back_populates="profile")
 
