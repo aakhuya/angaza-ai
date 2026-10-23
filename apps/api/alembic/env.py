@@ -1,20 +1,21 @@
 import os
 from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from alembic import context
-from app.models import entities, user  # noqa: F401  (register tables)
 from app.models.base import Base
+from app.models import entities, user  # noqa: F401  (register tables)
+from app.models.session import normalise_database_url
 
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option(
-    "sqlalchemy.url",
-    os.getenv("DATABASE_URL", "sqlite:///./angaza.db"),
-)
+# Prefer the environment variable; fall back to the .ini value. Always
+# normalise the scheme so SQLAlchemy selects psycopg v3, not psycopg2.
+_url = os.getenv("DATABASE_URL") or config.get_main_option("sqlalchemy.url") or "sqlite:///./angaza.db"
+config.set_main_option("sqlalchemy.url", normalise_database_url(_url))
 
 target_metadata = Base.metadata
 
