@@ -12,16 +12,16 @@
 
 @theme {
   /* Foundations */
-  --color-obsidian: #080B10;
-  --color-graphite: #111720;
-  --color-graphite-raised: #1A222D;
-  --color-steel: #263241;
-  --color-steel-soft: #1B2532;
+  --color-obsidian: #0B0B0B;
+  --color-graphite: #141414;
+  --color-graphite-raised: #1B1B1B;
+  --color-steel: #2A2A2A;
+  --color-steel-soft: #222222;
 
   /* Text */
-  --color-soft-white: #F1F4F8;
-  --color-muted: #9AA5B5;
-  --color-faint: #6E7A8C;
+  --color-soft-white: #F5F5F5;
+  --color-muted: #A0A0A0;
+  --color-faint: #787878;
 
   /* Accents */
   --color-gold: #E8BC67;
@@ -34,16 +34,16 @@
   --color-success: #4FBE7A;
 
   /* Semantic aliases so existing class names keep working */
-  --color-bg: #080B10;
-  --color-bg-surface: #111720;
-  --color-bg-elevated: #1A222D;
+  --color-bg: #0B0B0B;
+  --color-bg-surface: #141414;
+  --color-bg-elevated: #1B1B1B;
   --color-bg-raised: #1F2937;
-  --color-border: #263241;
+  --color-border: #2A2A2A;
   --color-border-strong: #33445C;
 
-  --color-text: #F1F4F8;
-  --color-text-muted: #9AA5B5;
-  --color-text-faint: #6E7A8C;
+  --color-text: #F5F5F5;
+  --color-text-muted: #A0A0A0;
+  --color-text-faint: #787878;
 
   --color-accent: #E8BC67;
   --color-accent-soft: #6B5525;
