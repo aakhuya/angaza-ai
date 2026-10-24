@@ -1,73 +1,76 @@
 @import "tailwindcss";
 
 /*
-  Angaza AI visual identity — "Midnight Broadcast meets Analyst's Atelier".
+  AngazaBol — high-contrast onyx theme.
 
-  Design rules:
-  - Gold means emphasis (primary actions, selected nav, key insight labels).
-  - Teal means live intelligence (live indicators, positive trends, verified).
-  - Red means football context (team identity, negative events, errors).
-  - Cards stay calm: subtle borders and surface contrast before shadows.
+  Every surface is a near-neutral black with a very slight warm tint. Text
+  is bright off-white for maximum readability without the harsh glare of pure
+  white on pure black.
+
+  Accent colours are used only where they carry semantic meaning:
+  - gold = emphasis (primary actions, key insight labels)
+  - teal = live intelligence (streaming status, positive state)
+  - red = football context (team identity, negative events, errors)
 */
 
 @theme {
-  /* Foundations */
-  --color-obsidian: #0B0B0B;
-  --color-graphite: #141414;
-  --color-graphite-raised: #1B1B1B;
-  --color-steel: #2A2A2A;
-  --color-steel-soft: #222222;
+  /* ─── Surfaces ────────────────────────────────────── */
+  --color-obsidian: #020202;
+  --color-graphite: #0A0A0A;
+  --color-graphite-raised: #121212;
+  --color-steel: #1F1F1F;
+  --color-steel-soft: #161616;
 
-  /* Text */
-  --color-soft-white: #F5F5F5;
-  --color-muted: #A0A0A0;
-  --color-faint: #787878;
+  /* ─── Text ────────────────────────────────────────── */
+  --color-soft-white: #FAFAFA;
+  --color-muted: #A8A8A8;
+  --color-faint: #6E6E6E;
 
-  /* Accents */
-  --color-gold: #E8BC67;
-  --color-gold-soft: #6B5525;
-  --color-gold-deep: #A67C2B;
-  --color-signal-teal: #39D6B0;
-  --color-signal-teal-soft: #1B5A4C;
-  --color-live-red: #E05555;
-  --color-live-red-soft: #5A2323;
+  /* ─── Accents ─────────────────────────────────────── */
+  --color-gold: #F5B33F;
+  --color-gold-soft: #7A551A;
+  --color-gold-deep: #B87A1E;
+  --color-signal-teal: #3FC4A8;
+  --color-signal-teal-soft: #1B4F44;
+  --color-live-red: #E04A4A;
+  --color-live-red-soft: #5A1D1D;
   --color-success: #4FBE7A;
 
-  /* Semantic aliases so existing class names keep working */
-  --color-bg: #0B0B0B;
-  --color-bg-surface: #141414;
-  --color-bg-elevated: #1B1B1B;
-  --color-bg-raised: #1F2937;
-  --color-border: #2A2A2A;
-  --color-border-strong: #33445C;
+  /* ─── Semantic aliases (keep class names working) ─── */
+  --color-bg: #020202;
+  --color-bg-surface: #0A0A0A;
+  --color-bg-elevated: #121212;
+  --color-bg-raised: #1A1A1A;
+  --color-border: #1F1F1F;
+  --color-border-strong: #2E2E2E;
 
-  --color-text: #F5F5F5;
-  --color-text-muted: #A0A0A0;
-  --color-text-faint: #787878;
+  --color-text: #FAFAFA;
+  --color-text-muted: #A8A8A8;
+  --color-text-faint: #6E6E6E;
 
-  --color-accent: #E8BC67;
-  --color-accent-soft: #6B5525;
-  --color-accent-deep: #A67C2B;
-  --color-teal: #39D6B0;
-  --color-teal-soft: #1B5A4C;
-  --color-danger: #E05555;
-  --color-danger-soft: #5A2323;
+  --color-accent: #F5B33F;
+  --color-accent-soft: #7A551A;
+  --color-accent-deep: #B87A1E;
+  --color-teal: #3FC4A8;
+  --color-teal-soft: #1B4F44;
+  --color-danger: #E04A4A;
+  --color-danger-soft: #5A1D1D;
 
-  /* Typography */
+  /* ─── Type ────────────────────────────────────────── */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, monospace;
 
-  /* Radii */
+  /* ─── Radii ───────────────────────────────────────── */
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 10px;
   --radius-xl: 14px;
 
-  /* Shadows */
-  --shadow-card: 0 1px 0 0 rgba(255,255,255,0.02) inset, 0 1px 2px 0 rgba(0,0,0,0.6);
-  --shadow-pop: 0 20px 40px -20px rgba(0,0,0,0.9);
+  /* ─── Shadows ─────────────────────────────────────── */
+  --shadow-card: 0 1px 0 0 rgba(255,255,255,0.04) inset, 0 1px 2px 0 rgba(0,0,0,0.8);
+  --shadow-pop: 0 20px 40px -20px rgba(0,0,0,0.95);
 
-  /* Motion */
+  /* ─── Motion ──────────────────────────────────────── */
   --animate-fade-in: fade-in 200ms ease-out;
   --animate-slide-up: slide-up 260ms ease-out;
   --animate-pulse-dot: pulse-dot 1.6s ease-in-out infinite;
@@ -76,14 +79,6 @@
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slide-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
-/* Y-axis oscillation: the ball gently turns its face left, then right.
-   A full 360° spin on a flat PNG looks fake (no back face, mirrors itself).
-   A ±22° swing reads as a real object turning in place. */
-@keyframes roll-y {
-  0%   { transform: perspective(900px) rotateY(-22deg) rotateZ(-6deg); }
-  50%  { transform: perspective(900px) rotateY(22deg)  rotateZ(-6deg); }
-  100% { transform: perspective(900px) rotateY(-22deg) rotateZ(-6deg); }
-}
 
 :root { color-scheme: dark; }
 
@@ -95,16 +90,14 @@ html, body {
 }
 body { font-family: var(--font-sans); }
 
-::selection { background: var(--color-gold); color: #0A0A0A; }
+::selection { background: var(--color-gold); color: #020202; }
 
-/* `text-2xs` keeps working from prior versions. */
 @utility text-2xs {
   font-size: 0.6875rem;
   line-height: 1rem;
   letter-spacing: 0.04em;
 }
 
-/* SIMULATION badge — used wherever the app shows a synthetic match. */
 @utility sim-badge {
   display: inline-flex;
   align-items: center;
@@ -118,6 +111,15 @@ body { font-family: var(--font-sans); }
   font-family: var(--font-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+/* Hard guarantee: any element with this class never wraps. Used by team
+   names in the match header. Ellipsis appears instead of wrapping. */
+.team-name-nowrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -139,14 +141,3 @@ body { font-family: var(--font-sans); }
 
 .focus-ring { outline: none; }
 .focus-ring:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
-
-
-/* Hard guarantee: any element with this class never wraps. Used by team
-   names in the match header and anywhere else a long club name could break
-   the layout. Ellipsis appears instead of wrapping. */
-.team-name-nowrap {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-}
