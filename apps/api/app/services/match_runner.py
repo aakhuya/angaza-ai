@@ -13,6 +13,7 @@ from app.schemas.stream import (
 from app.services.event_bus import event_bus
 from app.services.insight_generator import generate as generate_insight_stub
 from app.services.insight_store import insight_store
+from app.services import live_tracker
 from app.simulation.engine import SimulationEngine
 
 log = get_logger("angaza.runner")
@@ -49,6 +50,7 @@ class MatchRunnerRegistry:
             if match_id in self._runners and not self._runners[match_id].task.done():
                 return False
             stop = asyncio.Event()
+            live_tracker.mark_live(match_id, scenario, seed, viewer_mode)
             task = asyncio.create_task(
                 _run_match(match_id, seed, scenario, viewer_mode, speed_multiplier, stop)
             )
@@ -130,9 +132,11 @@ async def _run_match(
         final_state = compute_state(match_id, running_events)
         await event_bus.publish(match_id, StateEnvelope(state=final_state))
         await event_bus.publish(match_id, StatusEnvelope(status="finished"))
+        live_tracker.mark_finished(match_id)
         log.info("runner_finished", match_id=match_id, events=len(running_events))
     except asyncio.CancelledError:
         await event_bus.publish(match_id, StatusEnvelope(status="paused"))
+        live_tracker.mark_finished(match_id)
         raise
     finally:
         pass

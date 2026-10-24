@@ -5,7 +5,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from app.models.base import Base
-from app.models import entities, user  # noqa: F401  (register tables)
+from app.models import entities, live, user  # noqa: F401  (register tables)
 from app.models.session import normalise_database_url
 
 config = context.config

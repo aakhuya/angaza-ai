@@ -8,9 +8,14 @@ import { serverApi } from "@/lib/api-server";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getMe();
+  // read the display name from the profile, not /auth/me
+  // because profile is what the user edits.
   if (!user) redirect("/login");
 
   const profile = await getProfile().catch(() => null);
+  if (user && profile && profile.display_name) {
+    user.display_name = profile.display_name;
+  }
   const avatarUrl = profile?.avatar_url || "";
 
   const liveStatus = await serverApi

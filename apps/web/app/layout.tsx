@@ -24,6 +24,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${mono.variable}`}>
       
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try {
+              var t = localStorage.getItem('angaza.theme');
+              if (t === 'light') document.documentElement.classList.add('light');
+            } catch (e) {}`,
+          }}
+        />
+      </head>
       <body className="min-h-screen">
         <a
           href="#main"

@@ -1,6 +1,7 @@
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { getPreferences } from "@/features/settings/server";
 import { PreferencesForm } from "@/features/settings/PreferencesForm";
+import { ThemeToggle } from "@/components/settings/ThemeToggle";
 
 export default async function PreferencesPage() {
   const prefs = await getPreferences().catch(() => ({
@@ -19,6 +20,15 @@ export default async function PreferencesPage() {
           underlying numbers.
         </p>
       </div>
+
+      <Card>
+        <CardHeader>
+          <span className="text-sm font-medium">Appearance</span>
+        </CardHeader>
+        <CardBody>
+          <ThemeToggle />
+        </CardBody>
+      </Card>
 
       <Card>
         <CardHeader><span className="text-sm font-medium">Experience</span></CardHeader>
