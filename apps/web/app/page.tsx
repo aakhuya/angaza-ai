@@ -39,6 +39,11 @@ export default function LandingPage() {
                 intelligence — not just what happened, but{" "}
                 <span className="text-text">why</span>.
               </p>
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <TryItButton variant="primary" size="lg" />
+              <Link href="/signup"><Button size="lg" variant="secondary">Create an account</Button></Link>
+            </div>
             </div>
 
             <div className="flex w-full justify-center lg:col-span-6 lg:justify-end">
