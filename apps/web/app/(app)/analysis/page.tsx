@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { SimBadge } from "@/components/ui/SimBadge";
 import { getCurrentLive, getLiveSnapshot } from "@/features/match/live";
 
 export const dynamic = "force-dynamic";
@@ -34,7 +35,7 @@ export default async function AnalysisPage() {
           {current.live ? (
             <Badge tone="danger">Following live · {current.match.scenario.replace(/_/g, " ")}</Badge>
           ) : (
-            <Badge>Replay · {current.match.scenario.replace(/_/g, " ")}</Badge>
+            <><Badge>Replay · {current.match.scenario.replace(/_/g, " ")}</Badge><SimBadge /></>
           )}
         </div>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">

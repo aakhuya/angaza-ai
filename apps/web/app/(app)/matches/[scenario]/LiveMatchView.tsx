@@ -17,6 +17,8 @@ export function LiveMatchView({
   scenario, initialViewerMode, seed,
 }: { scenario: Scenario; initialViewerMode: ViewerMode; seed: number }) {
   const [viewerMode, setViewerMode] = useState<ViewerMode>(initialViewerMode);
+  const [paused, setPaused] = useState(false);
+  const [busy, setBusy] = useState(false);
   const matchId = useMemo(() => `${scenario}-${seed}-${viewerMode}`, [scenario, seed, viewerMode]);
 
   const { state, insights, status, error } = useMatchStream(matchId, {
@@ -43,6 +45,40 @@ export function LiveMatchView({
 
   const keyMoment = insights.length > 0 ? insights[insights.length - 1] : null;
 
+  async function togglePause() {
+    setBusy(true);
+    try {
+      if (paused) {
+        await fetch(`/api/matches/${encodeURIComponent(matchId)}/start?seed=${seed}&scenario=${scenario}&viewer_mode=${viewerMode}&speed=600`, {
+          method: "POST",
+          credentials: "include",
+        });
+      } else {
+        await fetch(`/api/matches/${encodeURIComponent(matchId)}/stop`, {
+          method: "POST",
+          credentials: "include",
+        });
+      }
+      setPaused(!paused);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function restart() {
+    setBusy(true);
+    try {
+      await fetch(`/api/matches/${encodeURIComponent(matchId)}/stop`, { method: "POST", credentials: "include" });
+      await fetch(`/api/matches/${encodeURIComponent(matchId)}/start?seed=${seed}&scenario=${scenario}&viewer_mode=${viewerMode}&speed=600`, {
+        method: "POST",
+        credentials: "include",
+      });
+      setPaused(false);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -52,7 +88,27 @@ export function LiveMatchView({
             {scenario.replace("_", " ")}
           </h1>
         </div>
-        <ViewerModeSwitcher value={viewerMode} onChange={setViewerMode} />
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={togglePause}
+            disabled={busy}
+            className="flex items-center gap-1.5 rounded-md border border-border bg-bg-surface px-3 py-1.5 text-xs font-medium text-text-muted hover:text-text disabled:opacity-50"
+          >
+            {paused ? <PlayCircle size={13} strokeWidth={1.75} /> : <PauseCircle size={13} strokeWidth={1.75} />}
+            {paused ? "Resume" : "Pause"}
+          </button>
+          <button
+            type="button"
+            onClick={restart}
+            disabled={busy}
+            className="flex items-center gap-1.5 rounded-md border border-border bg-bg-surface px-3 py-1.5 text-xs font-medium text-text-muted hover:text-text disabled:opacity-50"
+          >
+            <RotateCcw size={13} strokeWidth={1.75} />
+            Restart
+          </button>
+          <ViewerModeSwitcher value={viewerMode} onChange={setViewerMode} />
+        </div>
       </div>
 
       {error && <ErrorState title="Stream error" description={error} />}

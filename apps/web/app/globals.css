@@ -139,3 +139,14 @@ body { font-family: var(--font-sans); }
 
 .focus-ring { outline: none; }
 .focus-ring:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+
+
+/* Hard guarantee: any element with this class never wraps. Used by team
+   names in the match header and anywhere else a long club name could break
+   the layout. Ellipsis appears instead of wrapping. */
+.team-name-nowrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}

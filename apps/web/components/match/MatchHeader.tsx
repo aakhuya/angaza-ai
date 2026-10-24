@@ -42,29 +42,45 @@ export function MatchHeader({
       </div>
 
       {/*
-        Three-column grid. The score column is `auto` so it cannot shrink.
-        Each team column is `minmax(0, 1fr)` so it can shrink, but its
-        inner name span uses `truncate whitespace-nowrap` — this is what
-        prevents "United" from wrapping onto a second line at mobile widths.
+        Two-row layout on mobile, single row on desktop.
+        This is fundamentally different from a grid because a grid column
+        with a long name will force the OTHER columns to shrink or wrap.
+        A flex row with `overflow: hidden` on each name cell guarantees
+        single-line names — and using two rows on mobile means the names
+        NEVER compete with each other for horizontal space.
       */}
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-3 py-5 sm:gap-3 sm:px-4">
-        <TeamCell name={homeName} monogram={homeMonogram} side="home" />
+      <div className="px-3 py-4 sm:px-4">
+        {/* Mobile: score row + names row, stacked */}
+        <div className="sm:hidden">
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-baseline gap-2 font-mono tabular-nums">
+              <span className="text-3xl leading-none">{homeScore}</span>
+              <span className="text-2xl leading-none text-text-faint">–</span>
+              <span className="text-3xl leading-none">{awayScore}</span>
+            </div>
+            <div className="flex w-full items-center justify-between gap-3 text-xs">
+              <TeamRow name={homeName} monogram={homeMonogram} side="home" />
+              <TeamRow name={awayName} monogram={awayMonogram} side="away" />
+            </div>
+          </div>
+        </div>
 
-        <div className="flex flex-col items-center">
+        {/* Desktop: three-column layout */}
+        <div className="hidden grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:grid">
+          <TeamRow name={homeName} monogram={homeMonogram} side="home" />
           <div className="flex items-baseline gap-2 font-mono tabular-nums">
             <span className="text-3xl leading-none sm:text-4xl">{homeScore}</span>
             <span className="text-2xl leading-none text-text-faint sm:text-3xl">–</span>
             <span className="text-3xl leading-none sm:text-4xl">{awayScore}</span>
           </div>
+          <TeamRow name={awayName} monogram={awayMonogram} side="away" />
         </div>
-
-        <TeamCell name={awayName} monogram={awayMonogram} side="away" />
       </div>
     </div>
   );
 }
 
-function TeamCell({
+function TeamRow({
   name,
   monogram,
   side,
@@ -91,21 +107,16 @@ function TeamCell({
     >
       <span
         className={[
-          "flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-[0.7rem] font-semibold text-bg",
+          "flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-mono text-[0.65rem] font-semibold text-bg sm:h-9 sm:w-9 sm:text-[0.7rem]",
           side === "home" ? "bg-accent" : "bg-teal",
         ].join(" ")}
         aria-hidden
       >
         {short}
       </span>
-      {/*
-        `min-w-0` on the parent + `truncate whitespace-nowrap` on the span
-        means the name NEVER wraps. Long names show ellipsis. This is what
-        fixes the "United appears below Angaza FC" bug.
-      */}
       <span
         className={[
-          "min-w-0 truncate whitespace-nowrap text-xs font-medium sm:text-sm",
+          "team-name-nowrap text-xs font-medium sm:text-sm",
           side === "home" ? "text-left" : "text-right",
         ].join(" ")}
         title={name}

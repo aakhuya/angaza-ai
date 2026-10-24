@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { SimBadge } from "@/components/ui/SimBadge";
 
 import { Pitch } from "@/components/match/Pitch";
 import { Badge } from "@/components/ui/Badge";
@@ -130,6 +131,7 @@ function LiveBand({ state }: { state: MatchState | null }) {
           <span className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-danger">
             Live now
           </span>
+          <SimBadge />
           <span className="text-xs text-text-faint">·</span>
           <span className="text-xs text-text-muted">Angaza FC vs Mwangaza United</span>
         </div>

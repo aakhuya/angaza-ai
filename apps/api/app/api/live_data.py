@@ -18,6 +18,21 @@ from app.simulation.scenarios import SCENARIOS
 router = APIRouter(prefix="/live-data", tags=["live-data"])
 
 
+def _name_map() -> dict[str, dict]:
+    """Map player_id -> {name, team_name, position, number}."""
+    home, away = default_teams()
+    out: dict[str, dict] = {}
+    for team, name in ((home, home.name), (away, away.name)):
+        for p in team.players:
+            out[p.id] = {
+                "name": p.name,
+                "team_name": name,
+                "position": p.position,
+                "number": p.number,
+            }
+    return out
+
+
 def _resolve_live(match_id: str | None, scenario: str | None, seed: int | None):
     """Find the running match or fall back to the provided/default values."""
     if match_id:
@@ -108,7 +123,15 @@ def recap(
         row["match_id"], seed=row["seed"], scenario=row["scenario"]
     ).generate()
     state = compute_state(row["match_id"], events)
-    return {"match": row, "recap": build_recap(state, [])}
+    recap = build_recap(state, [])
+    names = _name_map()
+    for p in recap.get("standout_players", []):
+        info = names.get(p["player_id"]) or {}
+        p["name"] = info.get("name", p["player_id"])
+        p["team_name"] = info.get("team_name", p["team_id"])
+        p["position"] = info.get("position", "")
+        p["number"] = info.get("number", 0)
+    return {"match": row, "recap": recap}
 
 
 @router.get("/teams")

@@ -10,6 +10,7 @@ import {
   LayoutGrid,
   MoreHorizontal,
   Radio,
+  Trophy,
   Settings,
   Users,
   X,
@@ -30,6 +31,7 @@ const PRIMARY: NavItem[] = [
 ];
 
 const MORE: NavItem[] = [
+  { href: "/league", label: "League", icon: Trophy },
   { href: "/analysis", label: "Analysis", icon: BarChart3 },
   { href: "/recaps", label: "Recaps", icon: FileText },
   { href: "/players", label: "Players", icon: Users },

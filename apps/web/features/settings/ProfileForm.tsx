@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ApiError } from "@/lib/api";
 import type { Profile } from "@/types/api";
-import { patchProfile, uploadAvatar, type TeamOption } from "./client";
+import { patchProfile, uploadAvatar, type ClubOption } from "./client";
 
 type Status = "idle" | "saving" | "saved" | "error";
 
@@ -17,7 +17,7 @@ export function ProfileForm({
   teams,
 }: {
   initial: Profile;
-  teams: TeamOption[] | null;
+  teams: ClubOption[] | null;
 }) {
   const router = useRouter();
   const [form, setForm] = useState<Profile>(initial);
@@ -150,7 +150,7 @@ export function ProfileForm({
           value={form.favorite_team}
           onChange={(v) => setForm({ ...form, favorite_team: v })}
           options={[
-            { value: "", label: "None" },
+            { value: "", label: allTeams.length ? "None" : "No teams available" },
             ...allTeams.map((t) => ({ value: t.name, label: t.name })),
           ]}
         />

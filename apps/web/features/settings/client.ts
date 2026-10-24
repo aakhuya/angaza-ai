@@ -34,20 +34,20 @@ export async function uploadAvatar(file: File): Promise<Profile> {
   return res.json();
 }
 
-export type TeamOption = {
-  id: string;
+export type ClubOption = {
   name: string;
   short_name: string;
+  nickname: string;
+  identity: string;
+  color: string;
   players: Array<{ id: string; name: string; position: string; number: number }>;
 };
 
-export async function getTeams(): Promise<[TeamOption, TeamOption] | null> {
+export async function getTeams(): Promise<ClubOption[]> {
   try {
-    const res = await api.get<{ home: TeamOption; away: TeamOption }>(
-      "/scenarios/balanced/teams",
-    );
-    return [res.home, res.away];
+    const res = await api.get<{ teams: ClubOption[] }>("/league/teams");
+    return res.teams;
   } catch {
-    return null;
+    return [];
   }
 }

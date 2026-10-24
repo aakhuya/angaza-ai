@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { SimBadge } from "@/components/ui/SimBadge";
 import { getCurrentLive, getLivePlayers } from "@/features/match/live";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +31,7 @@ export default async function PlayersPage() {
         <div className="flex flex-wrap items-center gap-3">
           <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">Players</p>
           {current.live && <Badge tone="danger">Live · {current.match.scenario.replace(/_/g, " ")}</Badge>}
+          <SimBadge />
         </div>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">Player intelligence</h1>
         <p className="mt-1 text-sm text-text-muted">

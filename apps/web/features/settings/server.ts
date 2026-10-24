@@ -1,6 +1,6 @@
 import { serverApi } from "@/lib/api-server";
 import type { Preferences, Profile } from "@/types/api";
-import type { TeamOption } from "./client";
+import type { ClubOption } from "./client";
 
 export function getProfile() {
   return serverApi.get<Profile>("/profile");
@@ -10,15 +10,12 @@ export function getPreferences() {
   return serverApi.get<Preferences>("/preferences");
 }
 
-export async function getTeams(): Promise<[TeamOption, TeamOption] | null> {
+export async function getTeams(): Promise<ClubOption[]> {
   try {
-    const res = await serverApi.get<{ home: TeamOption; away: TeamOption }>(
-      "/scenarios/balanced/teams",
-    );
-    return [res.home, res.away];
+    const res = await serverApi.get<{ teams: ClubOption[] }>("/league/teams");
+    return res.teams;
   } catch (err) {
-    // Log so it's visible in Vercel's runtime log.
     console.error("getTeams failed:", err);
-    return null;
+    return [];
   }
 }

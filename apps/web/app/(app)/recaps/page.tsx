@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { SimBadge } from "@/components/ui/SimBadge";
 import { getCurrentLive, getLiveRecap } from "@/features/match/live";
 
 export const dynamic = "force-dynamic";
@@ -40,7 +41,7 @@ export default async function RecapsPage() {
       <Card>
         <CardHeader>
           <span className="text-sm font-medium">Story</span>
-          <Badge tone="teal">grounded</Badge>
+          <div className="flex items-center gap-2"><Badge tone="teal">grounded</Badge><SimBadge /></div>
         </CardHeader>
         <CardBody className="space-y-3">
           <p className="text-sm">{r.story}</p>
@@ -74,8 +75,12 @@ export default async function RecapsPage() {
             <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {r.standout_players.map((p) => (
                 <li key={p.player_id} className="rounded-md border border-border bg-bg-elevated px-3 py-3">
-                  <div className="text-sm font-medium">{p.player_id}</div>
-                  <div className="mt-1 font-mono text-2xs text-text-faint">{p.team_id}</div>
+                  <div className="text-sm font-medium">{p.name ?? p.player_id}</div>
+                  <div className="mt-1 text-xs text-text-faint">
+                    {p.team_name ?? p.team_id}
+                    {p.position ? ` · ${p.position}` : ""}
+                    {p.number ? ` · #${p.number}` : ""}
+                  </div>
                   <div className="mt-2 font-mono text-sm text-accent">
                     {p.involvement_score.toFixed(1)}
                   </div>

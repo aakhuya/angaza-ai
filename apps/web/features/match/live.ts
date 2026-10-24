@@ -47,7 +47,19 @@ export type LiveRecap = {
     story: string;
     tactical_story: string;
     key_moments: Array<{ minute: number; category: string; title: string; body: string; confidence: number }>;
-    standout_players: Array<{ player_id: string; team_id: string; involvement_score: number; goals: number; shots: number; progressive_passes: number; defensive_actions: number }>;
+    standout_players: Array<{
+      player_id: string;
+      name?: string;
+      team_id: string;
+      team_name?: string;
+      position?: string;
+      number?: number;
+      involvement_score: number;
+      goals: number;
+      shots: number;
+      progressive_passes: number;
+      defensive_actions: number;
+    }>;
     turning_point: { minute: number; title: string; body: string; category: string } | null;
     statistics: Record<string, [number, number]>;
   };
