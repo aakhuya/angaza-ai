@@ -62,9 +62,17 @@ export function TopNav({
   }, [accountOpen]);
 
   async function onLogout() {
-    await logout();
-    router.push("/");
-    router.refresh();
+    try {
+      await logout();
+    } catch {
+      // If the API is unreachable, clear cookies client-side so the user
+      // is not stuck. The server will reject the stale token on next call.
+      document.cookie = "angaza_access=; Max-Age=0; path=/";
+      document.cookie = "angaza_refresh=; Max-Age=0; path=/";
+    }
+    // Hard navigation — discards Next.js server component cache so the
+    // landing page sees a logged-out state immediately.
+    window.location.href = "/";
   }
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
@@ -72,23 +80,14 @@ export function TopNav({
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-bg/92 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-[1600px] items-center gap-3 px-4 sm:px-6 lg:px-8">
-        {/* Profile link — LEFT on mobile, hidden on desktop */}
-        <Link
-          href="/settings/profile"
-          aria-label="Profile"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-text-muted hover:text-text focus-ring lg:hidden"
-        >
-          <User size={18} strokeWidth={1.75} />
-        </Link>
-
-        {/* Logo + wordmark — always visible, even on mobile */}
+{/* Logo + wordmark — always visible, even on mobile */}
         <Link
           href="/dashboard"
           className="flex shrink-0 items-center gap-2.5 focus-ring rounded-md"
         >
           <Logo compact asLink={false} />
           <span className="flex flex-col leading-none">
-            <span className="text-sm font-semibold tracking-tight">Angaza AI</span>
+            <span className="text-sm font-semibold tracking-tight">AngazaBol</span>
             <span className="mt-0.5 text-[0.55rem] uppercase tracking-[0.14em] text-text-faint">
               Illuminate every moment
             </span>

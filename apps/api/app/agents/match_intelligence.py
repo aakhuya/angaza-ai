@@ -5,7 +5,7 @@ from app.agents.schemas import MATCH_INTELLIGENCE_SCHEMA
 from app.ai.provider import ChatMessage, ChatRequest
 
 SYSTEM = (
-    "You are the Match Intelligence agent for Angaza AI, a football broadcast "
+    "You are the Match Intelligence agent for AngazaBol, a football broadcast "
     "intelligence system. You receive a validated FactBundle describing one "
     "match event, the surrounding match state, and a Tactical Analysis frame "
     "produced by a prior agent. Explain WHY the moment matters in football "

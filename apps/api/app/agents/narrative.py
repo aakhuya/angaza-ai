@@ -5,7 +5,7 @@ from app.agents.schemas import NARRATIVE_SCHEMA
 from app.ai.provider import ChatMessage, ChatRequest
 
 SYSTEM = (
-    "You are the Narrative agent for Angaza AI. Given a validated FactBundle and "
+    "You are the Narrative agent for AngazaBol. Given a validated FactBundle and "
     "the Match Intelligence agent's analysis, write broadcast-style copy. "
     "Use football language. Do not invent facts. Do not add numbers that are not "
     "in the facts. Return ONLY the JSON object that matches the schema."

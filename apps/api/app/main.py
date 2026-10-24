@@ -39,7 +39,7 @@ async def lifespan(app: FastAPI):
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Angaza AI API", version="0.1.0", lifespan=lifespan)
+    app = FastAPI(title="AngazaBol API", version="0.1.0", lifespan=lifespan)
 
     allowed = ["http://localhost:3000"]
     extra = _os.getenv("CORS_ORIGINS", "")

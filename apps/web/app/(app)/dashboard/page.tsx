@@ -52,12 +52,12 @@ export default async function DashboardPage() {
           <LatestInsight />
         </div>
 
-        <div className="order-3 lg:order-2">
-          <AgentActivity executions={agents.executions} />
-        </div>
-
         <div className="order-2 lg:order-3 lg:col-span-2">
           <SupportGrid viewerMode={preferences.viewer_mode} />
+        </div>
+
+        <div className="order-3 lg:order-2">
+          <AgentActivity executions={agents.executions} />
         </div>
       </div>
     </div>
@@ -98,7 +98,7 @@ function HeroBanner({ greeting }: { greeting: string }) {
         <div className="relative flex h-full flex-col px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
           <div className="mt-auto max-w-xl pb-1">
             <p className="font-mono text-[0.6rem] uppercase tracking-[0.22em] text-accent">
-              Angaza AI · football intelligence
+              AngazaBol · football intelligence
             </p>
             <h1 className="mt-2 text-[1.9rem] font-semibold leading-[1.05] tracking-tight sm:text-[2.4rem] lg:text-[2.75rem]">
               Football intelligence

@@ -42,16 +42,12 @@ export function MatchHeader({
       </div>
 
       {/*
-        Three-column grid with explicit min widths.
-        - Column 1 (home team) flexes from 0 but can grow.
-        - Column 2 (score) is auto-width — cannot shrink.
-        - Column 3 (away team) mirrors column 1.
-        Team names use `truncate whitespace-nowrap` so they show ellipsis
-        rather than wrap. This is the fix for the Samsung A55 wrap issue:
-        a long name like "Mwangaza United" never breaks to a second line,
-        and therefore never looks like a sub-label of the other team.
+        Three-column grid. The score column is `auto` so it cannot shrink.
+        Each team column is `minmax(0, 1fr)` so it can shrink, but its
+        inner name span uses `truncate whitespace-nowrap` — this is what
+        prevents "United" from wrapping onto a second line at mobile widths.
       */}
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-4 py-5">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-3 py-5 sm:gap-3 sm:px-4">
         <TeamCell name={homeName} monogram={homeMonogram} side="home" />
 
         <div className="flex flex-col items-center">
@@ -89,7 +85,7 @@ function TeamCell({
   return (
     <div
       className={[
-        "flex min-w-0 items-center gap-2.5",
+        "flex min-w-0 items-center gap-2",
         side === "home" ? "flex-row" : "flex-row-reverse",
       ].join(" ")}
     >
@@ -102,9 +98,14 @@ function TeamCell({
       >
         {short}
       </span>
+      {/*
+        `min-w-0` on the parent + `truncate whitespace-nowrap` on the span
+        means the name NEVER wraps. Long names show ellipsis. This is what
+        fixes the "United appears below Angaza FC" bug.
+      */}
       <span
         className={[
-          "min-w-0 truncate whitespace-nowrap text-sm font-medium",
+          "min-w-0 truncate whitespace-nowrap text-xs font-medium sm:text-sm",
           side === "home" ? "text-left" : "text-right",
         ].join(" ")}
         title={name}

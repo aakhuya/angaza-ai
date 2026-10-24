@@ -30,7 +30,7 @@ TACTICAL_SCHEMA: dict = {
 }
 
 SYSTEM = (
-    "You are the Tactical Analysis agent for Angaza AI. You receive a "
+    "You are the Tactical Analysis agent for AngazaBol. You receive a "
     "validated FactBundle describing one match event and its surrounding "
     "state. Identify the tactical pattern in play and describe it in one or "
     "two sentences. Every claim must be traceable to a value in the facts. "

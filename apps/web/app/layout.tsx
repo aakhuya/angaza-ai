@@ -9,7 +9,7 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Angaza AI — Illuminate Every Moment",
+  title: "AngazaBol — Illuminate Every Moment",
   description: "Explainable football match intelligence.",
 };
 

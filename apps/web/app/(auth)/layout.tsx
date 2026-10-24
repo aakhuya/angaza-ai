@@ -70,7 +70,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
           <div className="mt-auto max-w-2xl pb-6 sm:pb-8">
             <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">
-              Angaza AI
+              AngazaBol
             </p>
             <h1 className="mt-2 text-2xl font-semibold leading-[1.05] tracking-tight sm:text-3xl lg:text-4xl">
               Smarter insights.

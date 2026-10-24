@@ -37,7 +37,7 @@ export function AppNav({ user }: { user: User }) {
         <div className="flex items-center gap-8">
           <Link href="/dashboard" className="flex items-center gap-2 focus-ring rounded-md">
             <span className="block h-2 w-2 rounded-full bg-accent" aria-hidden />
-            <span className="font-semibold tracking-tight">Angaza AI</span>
+            <span className="font-semibold tracking-tight">AngazaBol</span>
           </Link>
           <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
             {links.map((l) => {

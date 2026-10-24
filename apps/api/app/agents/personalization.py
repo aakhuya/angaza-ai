@@ -4,7 +4,7 @@ from app.agents.schemas import PERSONALIZATION_SCHEMA
 from app.ai.provider import ChatMessage, ChatRequest
 
 SYSTEM = (
-    "You are the Personalization agent for Angaza AI. Rewrite the given insight "
+    "You are the Personalization agent for AngazaBol. Rewrite the given insight "
     "for the requested viewer mode. You MUST NOT change any numbers, team names, "
     "player names, or factual claims. Only change tone, emphasis, and depth. "
     "Viewer modes: 'casual' (short, plain, energetic), 'analyst' (precise, "

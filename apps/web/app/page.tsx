@@ -34,7 +34,7 @@ export default function LandingPage() {
               </h1>
 
               <p className="mt-8 max-w-xl text-base leading-relaxed text-text-muted sm:mt-10 sm:text-lg max-lg:mx-auto">
-                Angaza AI turns synthetic football events into explainable match
+                AngazaBol turns synthetic football events into explainable match
                 intelligence — not just what happened, but{" "}
                 <span className="text-text">why</span>.
               </p>

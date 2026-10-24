@@ -1,10 +1,18 @@
 import { api } from "@/lib/api";
 import type { Preferences, Profile } from "@/types/api";
 
-export function getProfile() { return api.get<Profile>("/profile"); }
-export function patchProfile(body: Partial<Profile>) { return api.patch<Profile>("/profile", body); }
+export function getProfile() {
+  return api.get<Profile>("/profile");
+}
 
-export function getPreferences() { return api.get<Preferences>("/preferences"); }
+export function patchProfile(body: Partial<Profile>) {
+  return api.patch<Profile>("/profile", body);
+}
+
+export function getPreferences() {
+  return api.get<Preferences>("/preferences");
+}
+
 export function patchPreferences(body: Partial<Preferences>) {
   return api.patch<Preferences>("/preferences", body);
 }
@@ -19,11 +27,12 @@ export async function uploadAvatar(file: File): Promise<Profile> {
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(typeof body?.detail === "string" ? body.detail : "Upload failed");
+    throw new Error(
+      typeof body?.detail === "string" ? body.detail : "Upload failed",
+    );
   }
   return res.json();
 }
-
 
 export type TeamOption = {
   id: string;
@@ -32,8 +41,13 @@ export type TeamOption = {
   players: Array<{ id: string; name: string; position: string; number: number }>;
 };
 
-export function getTeams() {
-  return fetch("/api/scenarios/balanced/teams", { credentials: "include" })
-    .then((r) => (r.ok ? r.json() : Promise.reject(new Error("teams fetch failed"))))
-    .then((body: { home: TeamOption; away: TeamOption }) => [body.home, body.away]);
+export async function getTeams(): Promise<[TeamOption, TeamOption] | null> {
+  try {
+    const res = await api.get<{ home: TeamOption; away: TeamOption }>(
+      "/scenarios/balanced/teams",
+    );
+    return [res.home, res.away];
+  } catch {
+    return null;
+  }
 }
