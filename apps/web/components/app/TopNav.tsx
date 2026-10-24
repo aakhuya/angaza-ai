@@ -10,6 +10,7 @@ import {
   FileText,
   Home,
   LayoutGrid,
+  Trophy,
   LogOut,
   Radio,
   User,
@@ -31,6 +32,7 @@ type NavItem = {
 const PRIMARY: NavItem[] = [
   { href: "/dashboard", label: "Home", icon: Home },
   { href: "/matches", label: "Matches", icon: LayoutGrid },
+  { href: "/league", label: "League", icon: Trophy },
   { href: "/live", label: "Live", icon: Radio, live: true },
   { href: "/analysis", label: "Analysis", icon: BarChart3 },
   { href: "/recaps", label: "Recaps", icon: FileText },

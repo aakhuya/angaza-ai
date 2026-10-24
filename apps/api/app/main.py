@@ -8,7 +8,9 @@ from app.api.agents import router as agents_router
 from app.api.agents_stats import router as agents_stats_router
 from app.api.auth import router as auth_router
 from app.api.health import router as health_router
+from app.api.league import router as league_router
 from app.api.live import router as live_router
+from app.api.live_data import router as live_data_router
 from app.api.matches import router as matches_router
 from app.api.oauth import router as oauth_router
 from app.api.password import router as password_router
@@ -64,6 +66,8 @@ def create_app() -> FastAPI:
     app.include_router(oauth_router)
     app.include_router(password_router)
     app.include_router(live_router)
+    app.include_router(live_data_router)
+    app.include_router(league_router)
 
     return app
 

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter
 
@@ -19,5 +19,5 @@ def status() -> dict:
         "count": len(rows),
         "match_ids": [r["match_id"] for r in rows],
         "matches": rows,
-        "checked_at": datetime.now(timezone.utc).isoformat(),
+        "checked_at": datetime.now(UTC).isoformat(),
     }

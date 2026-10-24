@@ -1,24 +1,30 @@
-import Link from "next/link";
-
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
-import { SCENARIOS } from "@/features/matches/scenarios";
-import { getSnapshot } from "@/features/match/server";
-import { getCurrentMatch } from "@/lib/currentMatch";
+import { getCurrentLive, getLiveSnapshot } from "@/features/match/live";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function AnalysisIndexPage() {
-  const current = await getCurrentMatch();
+export default async function AnalysisPage() {
+  const [current, snapshot] = await Promise.all([
+    getCurrentLive(),
+    getLiveSnapshot().catch(() => null),
+  ]);
 
-  const results = await Promise.allSettled(
-    SCENARIOS.map(async (s) => ({ scenario: s, snapshot: await getSnapshot(s.id, current.seed) })),
-  );
+  if (!snapshot) {
+    return (
+      <div className="space-y-6">
+        <header>
+          <h1 className="text-2xl font-semibold tracking-tight">Analysis</h1>
+          <p className="mt-1 text-sm text-text-muted">
+            Start a match to see live analysis.
+          </p>
+        </header>
+      </div>
+    );
+  }
 
-  const rows = results
-    .filter((r): r is PromiseFulfilledResult<{ scenario: typeof SCENARIOS[number]; snapshot: Awaited<ReturnType<typeof getSnapshot>> }> => r.status === "fulfilled")
-    .map((r) => r.value);
+  const s = snapshot.state;
 
   return (
     <div className="space-y-6 lg:space-y-8">
@@ -26,61 +32,84 @@ export default async function AnalysisIndexPage() {
         <div className="flex flex-wrap items-center gap-3">
           <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">Analysis</p>
           {current.live ? (
-            <Badge tone="danger">Following live · {current.scenario.replace(/_/g, " ")}</Badge>
+            <Badge tone="danger">Following live · {current.match.scenario.replace(/_/g, " ")}</Badge>
           ) : (
-            <Badge>Replay · {current.scenario.replace(/_/g, " ")}</Badge>
+            <Badge>Replay · {current.match.scenario.replace(/_/g, " ")}</Badge>
           )}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">Analysis</h1>
-        <p className="mt-1 max-w-2xl text-sm text-text-muted">
-          {current.live
-            ? "Reflecting the match you are currently watching."
-            : "Every scenario is a deterministic replay. Same seed, same intelligence."}
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+          {snapshot.match.match_id}
+        </h1>
+        <p className="mt-1 text-sm text-text-muted">
+          {s.total_events} events · {(s.home.goals)}–{(s.away.goals)}
         </p>
       </header>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {rows.map(({ scenario, snapshot }) => {
-          const s = snapshot.state;
-          const isCurrent = scenario.id === current.scenario;
-          return (
-            <Card
-              key={scenario.id}
-              className={isCurrent ? "ring-1 ring-accent" : ""}
-            >
-              <CardHeader>
-                <span className="text-sm font-medium capitalize">{scenario.label}</span>
-                {isCurrent ? <Badge tone="accent">Current</Badge> : <Badge>seed {snapshot.seed}</Badge>}
-              </CardHeader>
-              <CardBody className="flex flex-1 flex-col gap-4">
-                <p className="text-xs text-text-muted">{scenario.blurb}</p>
-                <dl className="grid grid-cols-2 gap-x-4 gap-y-2.5">
-                  <Stat label="Possession H" value={`${s.home.possession_pct}%`} />
-                  <Stat label="Possession A" value={`${s.away.possession_pct}%`} />
-                  <Stat label="Prog. passes H" value={s.home.progressive_passes} />
-                  <Stat label="Prog. passes A" value={s.away.progressive_passes} />
-                  <Stat label="Goals H" value={s.home.goals} />
-                  <Stat label="Goals A" value={s.away.goals} />
-                </dl>
-                <div className="mt-auto pt-2">
-                  <Link href={`/matches/${scenario.id}/analysis`} className="text-xs font-medium text-accent hover:underline">
-                    Deep dive →
-                  </Link>
-                </div>
-              </CardBody>
-            </Card>
-          );
-        })}
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <span className="text-sm font-medium">{s.home.team_id}</span>
+            <Badge tone="accent">{s.home.possession_pct}% poss</Badge>
+          </CardHeader>
+          <CardBody className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
+            <Kv label="Pass accuracy" value={`${s.home.pass_accuracy.toFixed(0)}%`} />
+            <Kv label="Prog. passes" value={s.home.progressive_passes} />
+            <Kv label="Final-third entries" value={s.home.final_third_entries} />
+            <Kv label="Shots (on target)" value={`${s.home.shots} (${s.home.shots_on_target})`} />
+            <Kv label="Pressures" value={s.home.pressures} />
+            <Kv label="Interceptions" value={s.home.interceptions} />
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <span className="text-sm font-medium">{s.away.team_id}</span>
+            <Badge tone="teal">{s.away.possession_pct}% poss</Badge>
+          </CardHeader>
+          <CardBody className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
+            <Kv label="Pass accuracy" value={`${s.away.pass_accuracy.toFixed(0)}%`} />
+            <Kv label="Prog. passes" value={s.away.progressive_passes} />
+            <Kv label="Final-third entries" value={s.away.final_third_entries} />
+            <Kv label="Shots (on target)" value={`${s.away.shots} (${s.away.shots_on_target})`} />
+            <Kv label="Pressures" value={s.away.pressures} />
+            <Kv label="Interceptions" value={s.away.interceptions} />
+          </CardBody>
+        </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <span className="text-sm font-medium">Top moments</span>
+          <span className="font-mono text-2xs text-text-faint">
+            {snapshot.insight_count} insights published
+          </span>
+        </CardHeader>
+        <CardBody>
+          <ul className="divide-y divide-border">
+            {snapshot.top_insights.map((m, i) => (
+              <li key={i} className="flex items-center gap-3 py-2.5">
+                <span className="font-mono text-2xs text-text-faint">
+                  {String(m.minute).padStart(2, "0")}:{String(m.second).padStart(2, "0")}
+                </span>
+                <span className="text-sm capitalize">{m.event_type.replace(/_/g, " ")}</span>
+                <span className="text-xs text-text-muted">{m.team_id}</span>
+                <span className="ml-auto font-mono text-xs text-accent">
+                  {(m.importance * 100).toFixed(0)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </CardBody>
+      </Card>
     </div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string | number }) {
+function Kv({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="min-w-0">
       <dt className="text-2xs uppercase tracking-wider text-text-faint">{label}</dt>
-      <dd className="mt-0.5 truncate font-mono text-sm text-text" title={String(value)}>{value}</dd>
+      <dd className="mt-0.5 truncate font-mono text-sm text-text">{value}</dd>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import delete, select
 
@@ -12,7 +12,7 @@ LIVE_TTL = timedelta(minutes=10)
 
 
 def mark_live(match_id: str, scenario: str, seed: int, viewer_mode: str) -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     db = SessionLocal()
     try:
         existing = db.scalar(select(LiveMatch).where(LiveMatch.match_id == match_id))
@@ -48,7 +48,7 @@ def mark_finished(match_id: str) -> None:
 
 
 def list_live() -> list[dict]:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     db = SessionLocal()
     try:
         # Purge rows that have expired but weren't cleaned up (Vercel killed the runner).

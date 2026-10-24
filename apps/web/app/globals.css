@@ -139,31 +139,3 @@ body { font-family: var(--font-sans); }
 
 .focus-ring { outline: none; }
 .focus-ring:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
-
-/* ─── Light mode override ──────────────────────────────────────────────
-   The default `@theme` block above defines the dark palette. When the
-   `html` element has the `light` class, these values override it. */
-
-html.light {
-  --color-bg: #FAFAF7;
-  --color-bg-surface: #FFFFFF;
-  --color-bg-elevated: #F3F4F1;
-  --color-bg-raised: #EBECE7;
-  --color-border: #E2E4DE;
-  --color-border-strong: #CFD2CB;
-  --color-text: #1A1D1A;
-  --color-text-muted: #5C6360;
-  --color-text-faint: #8A908D;
-
-  /* Keep the accents the same — they read well on both backgrounds. */
-  --color-accent: #B8860B;
-  --color-accent-soft: #E6D28F;
-  --color-accent-deep: #A67C2B;
-  --color-teal: #1F8E7E;
-  --color-teal-soft: #B8E6DE;
-  --color-danger: #B93B3B;
-  --color-danger-soft: #F4C7C7;
-  --color-success: #2E8B57;
-
-  color-scheme: light;
-}

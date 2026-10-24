@@ -1,62 +1,110 @@
-import Link from "next/link";
-
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
-import { SCENARIOS } from "@/features/matches/scenarios";
-import { getRecap } from "@/features/match/server";
-import { getCurrentMatch } from "@/lib/currentMatch";
+import { getCurrentLive, getLiveRecap } from "@/features/match/live";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function RecapsIndexPage() {
-  const current = await getCurrentMatch();
+export default async function RecapsPage() {
+  const [current, data] = await Promise.all([
+    getCurrentLive(),
+    getLiveRecap().catch(() => null),
+  ]);
 
-  const results = await Promise.allSettled(
-    SCENARIOS.map(async (s) => ({ scenario: s, recap: await getRecap(s.id, current.seed) })),
-  );
+  if (!data) {
+    return (
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Recaps</h1>
+        <p className="mt-1 text-sm text-text-muted">Start a match to see its recap.</p>
+      </div>
+    );
+  }
 
-  const rows = results
-    .filter((r): r is PromiseFulfilledResult<{ scenario: typeof SCENARIOS[number]; recap: Awaited<ReturnType<typeof getRecap>> }> => r.status === "fulfilled")
-    .map((r) => r.value);
+  const r = data.recap;
 
   return (
     <div className="space-y-6 lg:space-y-8">
       <header>
         <div className="flex flex-wrap items-center gap-3">
-          <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">Recaps</p>
-          {current.live && <Badge tone="danger">Following live · {current.scenario.replace(/_/g, " ")}</Badge>}
+          <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">Recap</p>
+          {current.live && <Badge tone="danger">Live · {current.match.scenario.replace(/_/g, " ")}</Badge>}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">Match stories</h1>
-        <p className="mt-1 max-w-2xl text-sm text-text-muted">
-          Grounded recaps built from validated match state. No invented statistics.
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+          {data.match.match_id}
+        </h1>
+        <p className="mt-1 font-mono text-sm text-text-muted">
+          Final score: {r.final_score.home} – {r.final_score.away}
         </p>
       </header>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {rows.map(({ scenario, recap }) => {
-          const isCurrent = scenario.id === current.scenario;
-          return (
-            <Card key={scenario.id} className={isCurrent ? "ring-1 ring-accent" : ""}>
-              <CardHeader>
-                <span className="text-sm font-medium capitalize">{scenario.label}</span>
-                <span className="font-mono text-sm tabular-nums text-text">
-                  {recap.recap.final_score.home}–{recap.recap.final_score.away}
-                </span>
-              </CardHeader>
-              <CardBody className="flex flex-1 flex-col gap-3">
-                <p className="text-sm leading-relaxed">{recap.recap.story}</p>
-                <p className="text-xs leading-relaxed text-text-muted">{recap.recap.tactical_story}</p>
-                <div className="mt-auto pt-3">
-                  <Link href={`/matches/${scenario.id}/recap`} className="text-xs font-medium text-accent hover:underline">
-                    Read full recap →
-                  </Link>
-                </div>
-              </CardBody>
-            </Card>
-          );
-        })}
-      </div>
+      <Card>
+        <CardHeader>
+          <span className="text-sm font-medium">Story</span>
+          <Badge tone="teal">grounded</Badge>
+        </CardHeader>
+        <CardBody className="space-y-3">
+          <p className="text-sm">{r.story}</p>
+          <p className="text-sm text-text-muted">{r.tactical_story}</p>
+        </CardBody>
+      </Card>
+
+      {r.turning_point && (
+        <Card>
+          <CardHeader>
+            <span className="text-sm font-medium">Turning point</span>
+            <span className="font-mono text-2xs text-text-faint">
+              {String(r.turning_point.minute).padStart(2, "0")}&apos;
+            </span>
+          </CardHeader>
+          <CardBody>
+            <p className="text-sm font-medium">{r.turning_point.title}</p>
+            <p className="mt-1 text-sm text-text-muted">{r.turning_point.body}</p>
+          </CardBody>
+        </Card>
+      )}
+
+      <Card>
+        <CardHeader>
+          <span className="text-sm font-medium">Standout players</span>
+        </CardHeader>
+        <CardBody>
+          {r.standout_players.length === 0 ? (
+            <p className="text-sm text-text-muted">No standout players recorded.</p>
+          ) : (
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {r.standout_players.map((p) => (
+                <li key={p.player_id} className="rounded-md border border-border bg-bg-elevated px-3 py-3">
+                  <div className="text-sm font-medium">{p.player_id}</div>
+                  <div className="mt-1 font-mono text-2xs text-text-faint">{p.team_id}</div>
+                  <div className="mt-2 font-mono text-sm text-accent">
+                    {p.involvement_score.toFixed(1)}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <span className="text-sm font-medium">Statistics</span>
+        </CardHeader>
+        <CardBody>
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3">
+            {Object.entries(r.statistics).map(([key, [h, a]]) => (
+              <div key={key} className="min-w-0">
+                <dt className="text-2xs uppercase tracking-wider text-text-faint">
+                  {key.replace(/_/g, " ")}
+                </dt>
+                <dd className="mt-0.5 truncate font-mono text-sm text-text tabular-nums">
+                  {h} / {a}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </CardBody>
+      </Card>
     </div>
   );
 }

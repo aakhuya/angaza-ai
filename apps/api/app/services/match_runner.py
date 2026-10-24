@@ -10,10 +10,10 @@ from app.schemas.stream import (
     StateEnvelope,
     StatusEnvelope,
 )
+from app.services import live_tracker
 from app.services.event_bus import event_bus
 from app.services.insight_generator import generate as generate_insight_stub
 from app.services.insight_store import insight_store
-from app.services import live_tracker
 from app.simulation.engine import SimulationEngine
 
 log = get_logger("angaza.runner")

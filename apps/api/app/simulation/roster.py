@@ -1,12 +1,8 @@
-"""
-Synthetic team and player roster.
+"""Synthetic team and player roster.
 
-Player names are drawn from common Kenyan first/last names so the simulated
-matches feel grounded. Team names are invented Swahili-flavoured clubs — no
-real team or league is represented.
-
-Team IDs remain "HOME" and "AWAY" so the rest of the pipeline (analytics,
-verification, storage) is unchanged.
+Eight fictional clubs, invented for this demo. Team IDs remain "HOME" and
+"AWAY" so the rest of the pipeline is unchanged. Players are named from
+common Kenyan name components — the characters are fictional.
 """
 from dataclasses import dataclass
 
@@ -38,67 +34,76 @@ class RosterTeam:
     id: str
     name: str
     short_name: str
+    nickname: str
+    identity: str
     color: str
-    # Two-to-three-letter monogram used as a "crest" in the UI.
-    # Avoids brand assets entirely, but reads as a real team mark.
     monogram: str
     players: tuple[RosterPlayer, ...]
 
 
-def build_team(
-    team_id: str,
-    name: str,
-    short_name: str,
-    color: str,
-    monogram: str,
-    name_offset: int,
-) -> RosterTeam:
+# All eight clubs. `home` and `away` reference the two that participate in
+# each scenario; the rest appear in the league table only.
+CLUBS = [
+    ("Angaza FC",      "ANG", "The Rising Stars", "Bold, ambitious, attacking football.",        "#E8BC67"),
+    ("Mwangaza United","MWU", "The Luminaries",   "Patient build-up and intelligent passing.",   "#39D6B0"),
+    ("Simba Ridge FC", "SRF", "The Lions",        "Physical defending and dangerous counters.",  "#E8A33D"),
+    ("Bahari Athletic","BHA", "The Tide",         "Fast wing play and high pressing.",           "#4FBDB0"),
+    ("Kivuli Rovers",  "KVR", "The Shadows",      "Compact defending and quick transitions.",    "#A67C2B"),
+    ("Acacia Crown FC","ACF", "The Royals",       "Disciplined midfield and tactical control.",  "#F5B33F"),
+    ("Mlima Forge",    "MLF", "The Highlanders",  "Relentless pressing and stamina.",            "#8A5F1E"),
+    ("Zuberi City",    "ZBC", "The Falcons",      "Creative attacking play and individual flair.","#2E8B57"),
+]
+
+
+def _build_players(prefix: str, offset: int) -> tuple[RosterPlayer, ...]:
     players: list[RosterPlayer] = []
     for i, pos in enumerate(POSITIONS):
-        fn = FIRST_NAMES[(name_offset + i) % len(FIRST_NAMES)]
-        ln = LAST_NAMES[(name_offset * 3 + i * 2) % len(LAST_NAMES)]
+        fn = FIRST_NAMES[(offset + i) % len(FIRST_NAMES)]
+        ln = LAST_NAMES[(offset * 3 + i * 2) % len(LAST_NAMES)]
         players.append(
             RosterPlayer(
-                id=f"{team_id}-p{i+1:02d}",
+                id=f"{prefix}-p{i+1:02d}",
                 name=f"{fn} {ln}",
                 position=pos,
                 number=i + 1,
             )
         )
+    return tuple(players)
+
+
+def build_team(team_id: str, name: str, short_name: str, nickname: str,
+               identity: str, color: str, monogram: str, offset: int) -> RosterTeam:
     return RosterTeam(
         id=team_id,
         name=name,
         short_name=short_name,
+        nickname=nickname,
+        identity=identity,
         color=color,
         monogram=monogram,
-        players=tuple(players),
+        players=_build_players(team_id, offset),
     )
 
 
 def default_teams() -> tuple[RosterTeam, RosterTeam]:
-    """
-    Angaza FC (home) and Mwangaza United (away).
-
-    Names are invented Swahili-flavoured clubs:
-    - "Angaza"  → "illuminate" (matches the product name)
-    - "Mwangaza" → "light / radiance"
-
-    Both are fictional and do not correspond to any real club.
-    """
-    home = build_team(
-        team_id="HOME",
-        name="Angaza FC",
-        short_name="ANG",
-        color="#E8BC67",
-        monogram="ANG",
-        name_offset=0,
-    )
-    away = build_team(
-        team_id="AWAY",
-        name="Mwangaza United",
-        short_name="MWU",
-        color="#39D6B0",
-        monogram="MWU",
-        name_offset=7,
-    )
+    """The two teams participating in the current simulation."""
+    home = build_team("HOME", "Angaza FC", "ANG", "The Rising Stars",
+                      "Bold, ambitious, attacking football.", "#E8BC67", "ANG", 0)
+    away = build_team("AWAY", "Mwangaza United", "MWU", "The Luminaries",
+                      "Patient build-up and intelligent passing.", "#39D6B0", "MWU", 7)
     return home, away
+
+
+def all_clubs() -> list[dict]:
+    """All eight clubs for the league table."""
+    out = []
+    for i, (name, short, nickname, identity, color) in enumerate(CLUBS):
+        out.append({
+            "name": name,
+            "short_name": short,
+            "nickname": nickname,
+            "identity": identity,
+            "color": color,
+            "players": [p.__dict__ for p in _build_players(f"CLUB{i}", i * 5)],
+        })
+    return out

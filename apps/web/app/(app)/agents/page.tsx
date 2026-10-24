@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { getAgentStats, getExecutions } from "@/features/agents/client";
-import { getCurrentMatch } from "@/lib/currentMatch";
+import { getCurrentLive } from "@/features/match/live";
 import type { AgentExecution } from "@/types/api";
 
 const CHAIN_ORDER = ["tactical", "match_intelligence", "narrative", "personalization"] as const;
@@ -30,8 +30,8 @@ export default async function AgentsPage({
   searchParams: Promise<{ match_id?: string }>;
 }) {
   const params = await searchParams;
-  const current = await getCurrentMatch();
-  const matchId = params.match_id ?? current.matchId;
+  const current = await getCurrentLive();
+  const matchId = params.match_id ?? current.match.match_id;
 
   const [executionsRes, statsRes] = await Promise.all([
     getExecutions(matchId, 300).catch(() => ({ match_id: matchId, count: 0, executions: [] as AgentExecution[] })),
