@@ -1,19 +1,38 @@
-from datetime import UTC, datetime, timedelta
+"""Live matches tracker.
+
+Records in-flight matches in the database so the state persists across
+Vercel function instances. Reads from `live_matches` table.
+"""
+
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import delete, select
 
 from app.models.live import LiveMatch
-from app.models.session import SessionLocal
 
-# A match is considered "live" for this long after it starts. 10 minutes is
-# generous for our 600x-speed demo (a real match runs in ~30s), and safely
-# covers slow cold starts on free-tier serverless.
+# A match is considered "live" for this long after it starts. 10 minutes
+# comfortably covers a full simulated match at 600x speed (a real match
+# runs in ~30 seconds of wall clock).
 LIVE_TTL = timedelta(minutes=10)
 
 
+def _session():
+    """Late-bind SessionLocal so pytest fixtures can replace the engine.
+
+    `from app.models.session import SessionLocal` at module level binds the
+    name once, at import time. If a test fixture later rebinds
+    `session_mod.SessionLocal`, this module would still be using the old
+    engine and fail with "no such table". Importing inside `_session()`
+    means we always use whatever is current.
+    """
+    from app.models.session import SessionLocal
+
+    return SessionLocal()
+
+
 def mark_live(match_id: str, scenario: str, seed: int, viewer_mode: str) -> None:
-    now = datetime.now(UTC)
-    db = SessionLocal()
+    now = datetime.now(timezone.utc)
+    db = _session()
     try:
         existing = db.scalar(select(LiveMatch).where(LiveMatch.match_id == match_id))
         if existing is not None:
@@ -39,7 +58,7 @@ def mark_live(match_id: str, scenario: str, seed: int, viewer_mode: str) -> None
 
 
 def mark_finished(match_id: str) -> None:
-    db = SessionLocal()
+    db = _session()
     try:
         db.execute(delete(LiveMatch).where(LiveMatch.match_id == match_id))
         db.commit()
@@ -48,15 +67,17 @@ def mark_finished(match_id: str) -> None:
 
 
 def list_live() -> list[dict]:
-    now = datetime.now(UTC)
-    db = SessionLocal()
+    now = datetime.now(timezone.utc)
+    db = _session()
     try:
-        # Purge rows that have expired but weren't cleaned up (Vercel killed the runner).
+        # Purge expired rows first.
         db.execute(delete(LiveMatch).where(LiveMatch.expires_at < now))
         db.commit()
 
         rows = db.scalars(
-            select(LiveMatch).where(LiveMatch.expires_at > now).order_by(LiveMatch.started_at.desc())
+            select(LiveMatch)
+            .where(LiveMatch.expires_at > now)
+            .order_by(LiveMatch.started_at.desc())
         ).all()
 
         return [
