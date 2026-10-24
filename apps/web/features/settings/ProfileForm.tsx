@@ -27,7 +27,12 @@ export function ProfileForm({
   const fileRef = useRef<HTMLInputElement>(null);
 
   const allPlayers = (teams ?? []).flatMap((t) =>
-    t.players.map((p) => ({ ...p, team_name: t.name, team_id: t.id })),
+    t.players.map((p) => ({
+      ...p,
+      team_name: t.name,
+      // ClubOption does not carry an id field — use the name as the identity.
+      team_id: t.short_name,
+    })),
   );
   const allTeams = teams ?? [];
 

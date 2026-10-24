@@ -380,3 +380,39 @@ def delete_account(
     db.commit()
     _clear_auth_cookies(response)
     return {"status": "deleted"}
+
+
+# ---- demo account (for judge-friendly "Try it" flow) -----------------------
+
+
+@router.post("/auth/demo", response_model=UserResponse, status_code=201)
+def demo_login(
+    response: Response,
+    db: Session = Depends(get_db),
+) -> UserResponse:
+    """Create a throwaway demo account and sign the caller in.
+
+    Used by the landing page's "Try it" button so judges can see the product
+    without a signup step. Each call produces a unique account so demos do
+    not collide. The accounts are real — the same auth rules apply — but they
+    are labelled with a "demo-" email prefix.
+    """
+    import secrets
+
+    suffix = secrets.token_hex(4)
+    email = f"demo-{suffix}@angazabol.demo"
+    password = secrets.token_urlsafe(24)
+
+    user = User(email=email, password_hash=hash_password(password))
+    user.profile = Profile(display_name=f"Guest {suffix[:4]}")
+    user.preferences = Preferences()
+    db.add(user)
+    db.flush()
+
+    raw_refresh = _issue_refresh(db, user)
+    db.commit()
+    db.refresh(user)
+
+    _set_auth_cookies(response, create_access_token(user.id), raw_refresh)
+    log.info("demo_login", user_id=user.id)
+    return _user_response(user)

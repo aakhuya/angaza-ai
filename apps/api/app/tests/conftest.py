@@ -42,8 +42,8 @@ def _test_database(tmp_path_factory):
     )
 
     # Import every model module so their tables register on Base.metadata.
-    from app.models.base import Base
     from app.models import entities, live, user  # noqa: F401
+    from app.models.base import Base
 
     Base.metadata.create_all(engine)
 

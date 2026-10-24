@@ -1,5 +1,8 @@
 "use client";
 
+import { PauseCircle, PlayCircle, RotateCcw } from "lucide-react";
+
+
 import { useEffect, useMemo, useState } from "react";
 
 import { ErrorState } from "@/components/ui/ErrorState";

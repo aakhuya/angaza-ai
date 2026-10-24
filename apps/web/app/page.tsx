@@ -6,6 +6,7 @@ import { RotatingBall } from "@/components/marketing/RotatingBall";
 import { FeatureStrip } from "@/components/marketing/FeatureStrip";
 import { Logo } from "@/components/marketing/Logo";
 import { Button } from "@/components/ui/Button";
+import { TryItButton } from "@/components/marketing/TryItButton";
 import { findHeroImage } from "@/lib/heroImage";
 
 export default function LandingPage() {
