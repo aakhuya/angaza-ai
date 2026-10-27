@@ -42,7 +42,17 @@ def _test_database(tmp_path_factory):
     )
 
     # Import every model module so their tables register on Base.metadata.
-    from app.models import entities, live, user  # noqa: F401
+    # Import every model module so their tables register on Base.metadata.
+    # This uses importlib so adding a new model does not require editing
+    # this file again.
+    import importlib
+    import pkgutil
+
+    import app.models as _models_pkg
+    for _mod_info in pkgutil.iter_modules(_models_pkg.__path__):
+        if _mod_info.name == "session":
+            continue  # session module holds engine/SessionLocal, not tables
+        importlib.import_module(f"app.models.{_mod_info.name}")
     from app.models.base import Base
 
     Base.metadata.create_all(engine)
