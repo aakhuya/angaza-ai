@@ -136,8 +136,11 @@ The Personalization agent is forbidden from changing any number or factual claim
 - SSE streaming of events, states, and insights
 - Argon2id auth with rotating refresh tokens in HttpOnly cookies
 - Onboarding wizard, profile, preferences, avatar upload (base64, persistent)
-- Demo login (`POST /auth/demo`) with one-click "Try it" landing flow
+- Demo login (`POST /auth/demo`) with one-click "Try it now — no signup" on the landing page
 - Eight-team league page
+- Agent executions persisted to Postgres (`agent_executions` table) so `/agents` works reliably across serverless function instances
+- Live matches tracked in Postgres (`live_matches` table) so `/analysis`, `/recaps`, `/players`, and `/agents` all show the same live match regardless of which tab or device opens them
+- High-contrast onyx palette (`#020202` background, `#FAFAFA` text) with semantic gold / teal / red accents
 - Responsive layout tested at 375 / 412 / 768 / 1024 / 1280 / 1440
 - Accessibility: skip-to-content, focus rings, `aria-live`, reduced-motion support
 - 68 backend tests including deterministic replay and verification rejection
@@ -178,3 +181,50 @@ cd apps/web
 pnpm install
 cp .env.local.example .env.local
 pnpm dev
+
+---
+
+## Judging criteria mapping
+
+### 1. Technological Implementation (20%)
+
+- Deterministic `SimulationEngine(seed, scenario)` — reproducibility is the point, not an accident
+- Pydantic v2 discriminated-union event schemas
+- SQLAlchemy 2.0 + Alembic migrations across dev (SQLite) and prod (Postgres)
+- Argon2id password hashing; JWT with rotating refresh tokens in HttpOnly cookies
+- 68 passing backend tests including hand-computed analytics fixtures
+- Typed SSE envelope union — the frontend never sees raw AI responses
+- Agent executions and live matches both persisted to Postgres — the pipeline survives serverless
+
+### 2. Agentic Design & Innovation (20%)
+
+- Four genuine agents in sequence: Tactical → Match Intelligence → Narrative → Personalization
+- A verification layer that rejects unknown IDs, unverified numbers, unknown categories
+- Per-agent execution records persisted to Postgres (`agent_executions` table), exposed at `/agents` — verifiable from any browser, tab, or device
+- Live-match tracking persisted to Postgres (`live_matches` table) so the pipeline stays coherent across serverless function instances
+- Provider abstraction with honest attribution (each `ChatResponse` carries the actual provider name)
+- `/agents` shows real rows written by the actual orchestrator, with real durations, real providers, and real rejection reasons
+
+**Category declared: Best Multi-Agent Orchestration.**
+
+### 3. Real-World Impact & Applicability (20%)
+
+- Real broadcaster / club / streaming-platform problem: turning event streams into audience-appropriate language
+- Three viewer modes map to three real audiences (casual, analyst, player-focused)
+- Architecture is designed so a real event provider (Opta, StatsBomb, in-venue) can replace the simulator behind the same interface
+- Production deployment readiness: deployed on Vercel with Postgres, real auth, real persistence, real error handling
+- Verification layer exists because broadcasters need to ship claims that survive audit
+
+### 4. User Experience & Presentation (20%)
+
+- High-contrast onyx-black theme (`#020202` background, `#FAFAFA` text) with gold, teal, and red used only for semantic meaning
+- One-click "Try it now — no signup" on the landing page — a judge is inside a live match in under 3 seconds without a form
+- Formation pitch rendered in SVG
+- Live match page with insight feed, agent trace, momentum chart, and pause/resume controls
+- Responsive across 375 / 412 / 768 / 1024 / 1280 / 1440
+- Accessible: skip-to-content, focus rings, `aria-live` on feeds, reduced-motion support
+
+### 5. Adherence to Hackathon Category (20%)
+
+Every feature traces to the five-stage pipeline: INGEST → INTERPRET → EXPLAIN → RENDER → PERSONALIZE. Nothing was added that does not fit one of those stages.
+
