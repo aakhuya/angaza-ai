@@ -1,4 +1,4 @@
-# Angaza AI — Architecture
+# AngazaBol — Architecture
 
 See the master prompt for the canonical architecture. This file records decisions as they land.
 
