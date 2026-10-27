@@ -28,22 +28,26 @@ export default function LandingPage() {
           */}
           <div className="grid w-full items-center gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="w-full max-w-3xl text-center lg:col-span-6 lg:text-left">
-              <h1 className="text-[2.75rem] font-semibold leading-[1.02] tracking-[-0.02em] sm:text-6xl lg:text-7xl">
+              <h1 className="text-[3rem] font-semibold leading-[0.98] tracking-[-0.03em] sm:text-6xl lg:text-7xl">
                 Every moment
                 <br />
                 <span className="text-accent">has a story.</span>
               </h1>
 
-              <p className="mt-8 max-w-xl text-base leading-relaxed text-text-muted sm:mt-10 sm:text-lg max-lg:mx-auto">
+              <p className="mx-auto mt-8 max-w-xl text-base leading-relaxed text-text-muted sm:mt-10 sm:text-lg lg:mx-0">
                 AngazaBol turns synthetic football events into explainable match
                 intelligence — not just what happened, but{" "}
                 <span className="text-text">why</span>.
               </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <TryItButton variant="primary" size="lg" />
-              <Link href="/signup"><Button size="lg" variant="secondary">Create an account</Button></Link>
-            </div>
+              <div className="mt-10 flex flex-col items-center gap-3 sm:mt-12 sm:flex-row sm:justify-center lg:justify-start">
+                <TryItButton variant="primary" size="lg" />
+                <Link href="/signup" className="w-full sm:w-auto">
+                  <Button size="lg" variant="secondary" className="w-full sm:w-auto">
+                    Create an account
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             <div className="flex w-full justify-center lg:col-span-6 lg:justify-end">

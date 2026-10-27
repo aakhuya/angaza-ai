@@ -28,6 +28,17 @@ export function HeroBackdrop({ image }: { image: HeroImage }) {
         <DesignedPitch />
       )}
 
+      {/* Mobile-only radial glow behind the headline. Adds depth without
+          a colour tint. Hidden on desktop where the photo carries the hero. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 lg:hidden mobile-glow"
+        style={{
+          backgroundImage:
+            "radial-gradient(700px 500px at 50% 15%, rgba(245,179,63,0.10), transparent 60%), radial-gradient(600px 400px at 50% 100%, rgba(63,196,168,0.06), transparent 60%)",
+        }}
+      />
+
       {/*
         Horizontal scrim: darkens the left where the headline lives.
         Vertical scrim: fades the top for the transparent header and the
