@@ -41,7 +41,7 @@ async def _collect_until_finished(
                     agen.__anext__(),
                     timeout=min(per_event_timeout, remaining),
                 )
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 # No new event arrived in time. If we already have `finished`,
                 # that's fine — we break below. Otherwise this is a real
                 # hang and we stop.
