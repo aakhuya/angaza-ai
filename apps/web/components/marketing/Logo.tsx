@@ -36,7 +36,7 @@ export function Logo({
   );
 }
 
-export function LogoMark({ size = 36 }: { size?: number }) {
+export function LogoMark({ size = 44 }: { size?: number }) {
   return (
     <Image
       src="/media/logo.png"

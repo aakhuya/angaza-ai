@@ -26,8 +26,8 @@ export default function Icon() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={`data:image/png;base64,${logoBase64}`}
-          width={30}
-          height={30}
+          width={32}
+          height={32}
           alt=""
         />
       </div>

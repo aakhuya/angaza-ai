@@ -89,7 +89,7 @@ export function TopNav({
         >
           <Logo compact asLink={false} />
           <span className="flex flex-col leading-none">
-            <span className="text-sm font-semibold tracking-tight">AngazaBol</span>
+            <span className="text-base font-semibold tracking-tight">AngazaBol</span>
             <span className="mt-0.5 text-[0.55rem] uppercase tracking-[0.14em] text-text-faint">
               Illuminate every moment
             </span>

@@ -1,4 +1,4 @@
-# Angaza AI
+# AngazaBol
 
 **Illuminate Every Moment.**
 

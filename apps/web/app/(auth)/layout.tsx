@@ -8,9 +8,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   const heroImage = findHeroImage();
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg">
-      {/* ── Top: image panel, faded into the page below ─────────────── */}
-      <header className="relative isolate h-[36svh] min-h-[220px] overflow-hidden sm:h-[42svh] lg:h-[46svh]">
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-bg">
+      {/* ── Top: image panel that fades into the page below ──────────── */}
+      <header className="relative isolate h-[34svh] min-h-[200px] sm:h-[40svh] lg:h-[46svh]">
         {heroImage ? (
           <Image
             src={heroImage.src}
@@ -25,35 +25,45 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(900px 400px at 78% 20%, rgba(232,188,103,0.20), transparent 55%)," +
-                "radial-gradient(700px 340px at 15% 100%, rgba(57,214,176,0.12), transparent 60%)," +
-                "linear-gradient(180deg, #0E141C 0%, #080B10 100%)",
+                "radial-gradient(900px 400px at 78% 20%, rgba(245,179,63,0.14), transparent 55%)," +
+                "radial-gradient(700px 340px at 15% 100%, rgba(63,196,168,0.10), transparent 60%)," +
+                "linear-gradient(180deg, #0A0A0A 0%, #020202 100%)",
             }}
           />
         )}
 
-        {/* Left scrim for headline legibility */}
+        {/*
+          The scrim has three stops:
+          - top: darkens the image behind the header (logo + back link)
+          - middle: gradient out so the mid of the image reads clearly
+          - bottom: hard fade to #020202 so the image dissolves into the
+            page background with no visible seam at mobile OR desktop.
+          The bottom fade extends 20svh down — well past the header height —
+          so even the tallest panels fade smoothly.
+        */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-20"
+          style={{
+            backgroundImage:
+              "linear-gradient(180deg, rgba(2,2,2,0.85) 0%, rgba(2,2,2,0) 100%)",
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0"
+          style={{
+            height: "20svh",
+            backgroundImage:
+              "linear-gradient(180deg, rgba(2,2,2,0) 0%, rgba(2,2,2,0.6) 40%, rgba(2,2,2,1) 100%)",
+          }}
+        />
         <div
           aria-hidden
           className="absolute inset-0"
           style={{
             backgroundImage:
-              "linear-gradient(90deg, rgba(8,11,16,0.92) 0%, rgba(8,11,16,0.62) 45%, rgba(8,11,16,0.28) 75%, rgba(8,11,16,0.72) 100%)",
-          }}
-        />
-        {/* Top fade for the header, and the crucial bottom fade into the page. */}
-        <div
-          aria-hidden
-          className="absolute inset-x-0 top-0 h-24"
-          style={{
-            backgroundImage: "linear-gradient(180deg, rgba(8,11,16,0.7) 0%, rgba(8,11,16,0) 100%)",
-          }}
-        />
-        <div
-          aria-hidden
-          className="absolute inset-x-0 bottom-0 h-40"
-          style={{
-            backgroundImage: "linear-gradient(180deg, rgba(8,11,16,0) 0%, rgba(8,11,16,1) 90%)",
+              "linear-gradient(90deg, rgba(2,2,2,0.85) 0%, rgba(2,2,2,0.45) 40%, rgba(2,2,2,0.10) 70%, rgba(2,2,2,0.55) 100%)",
           }}
         />
 
@@ -68,7 +78,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </Link>
           </div>
 
-          <div className="mt-auto max-w-2xl pb-6 sm:pb-8">
+          <div className="mt-auto max-w-2xl pb-10 sm:pb-14 lg:pb-16">
             <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">
               AngazaBol
             </p>
@@ -81,7 +91,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
       </header>
 
-      <main id="main" className="relative flex flex-1 items-start justify-center px-4 pb-12 pt-4 sm:px-6 sm:pt-6 lg:px-8">
+      {/* ── Form area — sits on the pure-black page background, no seam ── */}
+      <main
+        id="main"
+        className="relative flex flex-1 items-start justify-center px-4 pt-4 pb-12 sm:px-6 sm:pt-6 lg:px-8"
+      >
         <div className="w-full max-w-md animate-fade-in">{children}</div>
       </main>
     </div>
