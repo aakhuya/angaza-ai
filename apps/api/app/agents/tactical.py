@@ -37,11 +37,24 @@ SYSTEM = (
     "Return ONLY the JSON object that matches the schema."
 )
 
+RETRY_INSTRUCTIONS = (
+    "\n\nIMPORTANT: Your previous response was rejected by the verification "
+    "layer for the following reasons:\n{reasons}\n\n"
+    "Fix every issue. Only reference values present in the facts."
+)
 
-def build_request(bundle: FactBundle) -> ChatRequest:
+
+def build_request(
+    bundle: FactBundle,
+    rejection_reasons: list[str] | None = None,
+) -> ChatRequest:
+    system = SYSTEM
+    if rejection_reasons:
+        system += RETRY_INSTRUCTIONS.format(reasons="; ".join(rejection_reasons))
+
     return ChatRequest(
         messages=[
-            ChatMessage(role="system", content=SYSTEM),
+            ChatMessage(role="system", content=system),
             ChatMessage(
                 role="user",
                 content=json.dumps(bundle.to_prompt_json(), separators=(",", ":")),
